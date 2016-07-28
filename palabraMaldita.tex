@@ -7,6 +7,7 @@
 \section{PalabraMaldita básicos}
 \begin{itemize}
 	\item Resolución fija, 1024×768 de base.
+	\item La fuente que se utilizará será Lato o Montserrat.
 	\item Menú selección personajes.
 	\item Música. Sin opción a quitarla.
 	\item Dos personajes base más los de internete (por eso es Dimensions (\textbf{Pendiente de aprobación})).
@@ -28,17 +29,17 @@
 	\begin{enumerate}
 		\item Golpes adelante y atrás
 		\begin{itemize}
-			\item Golpes flojos: Quitan 5\%. 
-			\item Golpes fuertes: Quitan 10\%.
+			\item Golpes flojos: Quitan 5. 
+			\item Golpes fuertes: Quitan 10.
 		\end{itemize}
 		\item Golpes saltando
 		\begin{itemize}
-			\item Quitan 3\%.
+			\item Quitan 3.
 		\end{itemize} 
 		\item Hacia abajo.
 		\begin{itemize}
-			\item Golpes flojos: Quitan 3\%. 
-			\item Golpes fuertes: Quitan 6\%.
+			\item Golpes flojos: Quitan 3. 
+			\item Golpes fuertes: Quitan 6.
 		\end{itemize}
 	\end{enumerate}
 
@@ -76,5 +77,61 @@
 
 	\item Habrá un fondo de pantalla. Ya veremos como.
 \end{itemize}
+
+Definición básica de clases
+\begin{itemize}
+	\item Clase personaje: Clase padre de la que derivarán todos los demás personajes.
+	\begin{itemize}
+		\item Nombre: Se explica solo 
+		\item Sprites[] (Lista): Cada posición de la lista se corresponde con una tecla de acción válida. De esta forma se `adapta" para futuros combos.
+				TODAS LAS FICHAS DE SPRITES DEBERÁN LLAMARSE DE LA SIGUIENTE FORMA: <nombre>_ficha.png
+		\begin{itemize}
+			\item <nombre>: Nombre del personaje, todo en minúsculas.
+		\end{itemize}
+		\item Estado: Variable numérica que representará el estado del personaje
+		\begin{itemize}
+			\item Estado idle: Valor 0
+			\item Estado atacando: Valor 1
+			\item Estado defendiendo: Valor 2
+			\item Estado en el aire: Valor 3
+			\item Estado atacando en el aire: Valor 13
+			\item Estado moviendose hacia atras en el aire: Valor 23
+			\item Estado recibiendo damages: Valor 4
+			\item Estado orientacion: Valor `izq" o `drch", indica hacia que lado está el oponente
+		\end{itemize}
+		\item Vida: Valor numérico de 0 a 100 de tipo entero.
+	\end{itemize}
+\end{itemize}
+
+Definicion de animaciones 
+\begin{itemize}
+	\item Avatar del personaje: Para el panel de personajes y para colocarlo al lado de la barra de vida.
+	\item Animación de ataque fuerte, ataque débil, idle, morir, saltar, pegar saltando, golpe bajo, defenderse y defenderse en el aire: Mínimo 10 frames por cada animación. (Véase hoja de Samus, se puede negociar el nº mínimo de frames).
+	\begin{itemize}
+		\item Ataque fuerte o débil: Se realiza cuando se pulsa la tecla correspondiente
+		\item Idle: Animación que se realiza cuando el personaje está quieto sin recibir daño.
+		\item Saltar: Animacion que se realiza cuando el pj salta.
+		\item Pegar saltando: Animación que se realiza cuando el personaje realiza un golpe en medio de un salto.
+		\item Golpe bajo: Animación que se realiza cuando el personaje realiza un ataque en dirección hacia abajo (RECORDATORIO: El personaje no se puede agachar)
+		\item Defenderse y defenderse en el aire: Animación (2 o 3 frames a lo muchisimo xddd) que se realiza cuando el personaje se defiende.
+	\end{itemize}
+	\item Sprites[] (Lista): Cada posición de la lista se corresponde con una tecla de acción válida. De esta forma se `adapta" para futuros combos.
+	\item Los sprites deberán ser a color.
+	\item Resolución de los frames: PENDIENTE DE CONCRETAR.
+	\item OPCIONALES: 
+	\begin{itemize}
+		\item Imagen de avatar `Recibiendo daño".
+		\item Animación barra de vida.
+	\end{itemize}
+\end{itemize}
+
+
+TAREAS PARA LA SEMANA PRÓXIMA
+
+-- CREAR CLASE PERSONAJE (ADRI)
+-- CREAR MENU PRINCIPAL (DANI)
+-- CREAR PANEL SELECCION (DANI)
+-- CREAR ESCENA PELEAS (DANI)
+-- CREAR snippet DE CÓDIGO PARA EL HUD DE VIDA (ADRI)
 
 \end{document}
