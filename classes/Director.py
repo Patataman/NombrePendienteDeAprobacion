@@ -1,5 +1,8 @@
 # -*- coding: utf-8 -*-
 
+import pygame
+from pygame.locals import *
+
 class Director:
 	"""Representa el objeto principal del juego.
 
@@ -10,7 +13,7 @@ class Director:
 	derivados de Scene."""
 
 	def __init__(self):
-		self.screen = pygame.display.set_mode(RESOLUTION[0])
+		self.screen = pygame.display.set_mode((1024,768))
 		pygame.display.set_caption("NombrePendienteDeAprobacion")
 		self.scene = None
 		self.quit_flag = False
