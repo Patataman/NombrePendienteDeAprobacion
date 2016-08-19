@@ -21,15 +21,14 @@ HEIGHT = 768
 def main():
     screen = pygame.display.set_mode((WIDTH, HEIGHT))
     pygame.display.set_caption("FightSene")
-    background_image = load_image('assets/images/fondoX.png')
  	# Se inicializan los personajes y avatares
     player1 = Player("pepi")
     player2 = Player("pepo")
-    avatar1 = load_image("assets/images/pepi_avatarI.png")
+    avatar1 = load_image("assets/images/pepi_avatar.png")
     avatar1Rect = avatar1.get_rect()
     avatar1Rect.centerx = 41
     avatar1Rect.centery = 40
-    avatar2 = load_image("assets/images/pepo_avatarD.png")
+    avatar2 = load_image("assets/images/pepo_avatar.png")
     avatar2Rect = avatar2.get_rect()
     avatar2Rect.centerx = 983
     avatar2Rect.centery = 40
@@ -65,7 +64,7 @@ def main():
         time2 += time
 
         # Pintamos
-        screen.blit(background_image, (0, 0))
+        screen.fill((0,0,0))
         timeCD, time_rect = texto(str(couldown - int(math.floor(time2/1000))), 512, 45)
 
 

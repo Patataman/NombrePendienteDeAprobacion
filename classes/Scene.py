@@ -3,7 +3,7 @@
 from Director import Director
 from Functions import *
 from Player import *
-import pygame, sys, math
+import pygame, sys, math, copy
 from pygame.locals import *
 #import Personajes
 
@@ -212,8 +212,8 @@ class SceneFight(Scene):
         screen = pygame.display.set_mode((WIDTH, HEIGHT))
         pygame.display.set_caption("FightSene")
         # Se inicializan los personajes y avatares
-        self.player1 = player1
-        self.player2 = player2
+        self.player2 = copy.copy(player2)
+        self.player1 = copy.copy(player1)
 
         self.avatar1Rect = self.player1.avatar.get_rect()
         self.avatar1Rect.centerx = 41
@@ -257,4 +257,3 @@ class SceneFight(Scene):
         pygame.draw.rect(screen,(255,255,255),self.hudP2)
         screen.blit(self.player1.avatar, self.avatar1Rect)
         screen.blit(self.player2.avatar, self.avatar2Rect)
-        pygame.display.flip()
