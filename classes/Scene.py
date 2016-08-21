@@ -124,13 +124,13 @@ class ScenePanel(Scene):
             #Se selecciona luchar
             if keys[K_F2]:
                 scene = SceneFight(self.director, self.charac1, self.charac2)
-                self.director.change_scene(scene)
+                self.director.change_scene(scene) 
             #Se selecciona un luchador
-            if keys[K_RETURN]:
+            if keys[K_SPACE]:
                 #Se guarda el pj seleccionado y se actualiza la vista previa
                 self.charac1 = self.panel[self.select1]
                 self.prev1 = self.panel[self.select1]
-            if keys[K_SPACE]:
+            if keys[K_RETURN]:
                 #Se guarda el pj seleccionado y se actualiza la vista previa
                 self.charac2 = self.panel[self.select2]
                 self.prev2 = self.panel[self.select2]
