@@ -83,17 +83,23 @@ class ScenePanel(Scene):
         nombres = open('classes/personajes','r').read().split('\n')
 
         #Lista de objetos personajes (siendo cada posición un tipo de personaje)
+        #El panel se sitúa en el medio de la pantalla y
+        # a los lados la vista previa del pj
         self.panel = []
         for nomb in nombres:
             tmp_pj = Player(nomb)
             self.panel.append(tmp_pj)
         
         self.charac1, self.charac2, self.prev1, self.prev2 = self.panel[0],self.panel[0],None,None
-        #El panel se sitúa en el medio de la pantalla y
-        # a los lados la vista previa del pj
+        self.marco1 = load_image("assets/images/select1.png", True)
+        self.marco2 = load_image("assets/images/select2.png", True)
+        self.marcoComun = load_image("assets/images/select12.png", True)
 
         self.atras, self.atras_rect = texto('Back F1', 100, HEIGHT-100, 40)
         self.sig, self.sig_rect = texto('Figth! F2', WIDTH-100 , HEIGHT-100, 40)
+
+        # +1 porque si hay 3 personajes significa que son 0 filas. Pero en realidad es 1
+        self.max_filas = math.floor(len(self.panel)/4)+1
 
         #Carga la musica
         #pygame.mixer.music.load("assets/music/title_theme.mp3")
@@ -119,73 +125,55 @@ class ScenePanel(Scene):
             if keys[K_F2]:
                 scene = SceneFight(self.director, self.charac1, self.charac2)
                 self.director.change_scene(scene)
-            if keys[K_RETURN] or keys[K_SPACE]:
-                #Se selecciona un luchador
-                if keys[K_RETURN]:
-                    #Se guarda el pj seleccionado y se actualiza la vista previa
+            #Se selecciona un luchador
+            if keys[K_RETURN]:
+                #Se guarda el pj seleccionado y se actualiza la vista previa
+                self.charac1 = self.panel[self.select1]
+                self.prev1 = self.panel[self.select1]
+            if keys[K_SPACE]:
+                #Se guarda el pj seleccionado y se actualiza la vista previa
+                self.charac2 = self.panel[self.select2]
+                self.prev2 = self.panel[self.select2]
+            if keys[K_w]:
+                if self.select1/4 != 0:
+                    self.select1 -= 4
                     self.charac1 = self.panel[self.select1]
-                    self.prev1 = self.panel[self.select1]
-                if keys[K_SPACE]:
-                    #Se guarda el pj seleccionado y se actualiza la vista previa
+                    #self.prev1 = self.panel[self.select1].getIdle()
+            if keys[K_UP]:
+                if self.select2/4 != 0:
+                    self.select2 -= 4
                     self.charac2 = self.panel[self.select2]
-                    self.prev2 = self.panel[self.select2]
-                if keys[K_w]:
-                    if self.select1 != 0:
-                        self.select1 -= 4
-                        self.charac1 = self.panel[self.select1]
-                        #self.prev1 = self.panel[self.select1].getIdle()
-                if keys[K_UP]:
-                    if self.select2 != 0:
-                        self.select2 -= 4
-                        self.charac2 = self.panel[self.select2]
-                        #self.prev2 = self.panel[self.select2].getIdle()
-                if keys[K_a]:
-                    if self.select1 % 4 != 0:
-                        self.select1 -= 1
-                        self.charac1 = self.panel[self.select1]
-                        #self.prev1 = self.panel[self.select1].getIdle()
-                    if self.select % 4 == 0:
-                        self.select1 += 3
-                        self.charac1 = self.panel[self.select1]
-                        #self.prev1 = self.panel[self.select1].getIdle()
-                if keys[K_LEFT]:
-                    if self.select2 % 4 != 0:
-                        self.select2 -= 1
-                        self.charac2 = self.panel[self.select2]
-                        #self.prev2 = self.panel[self.select2].getIdle()
-                    if self.select % 4 == 0:
-                        self.select1 += 3
-                        self.charac1 = self.panel[self.select1]
-                        #self.prev1 = self.panel[self.select1].getIdle()
-                if keys[K_s]:
-                    if self.select1 != self.max_filas:
-                        self.select1 += 4
-                        self.charac1 = self.panel[self.select1]
-                        #self.prev1 = self.panel[self.select1].getIdle()
-                if keys[K_DOWN]:
-                    if self.select2 != self.max_filas:
-                        self.select2 += 4
-                        self.charac2 = self.panel[self.select2]
-                        #self.prev2 = self.panel[self.select2].getIdle()
-                if keys[K_d]:
-                    if self.select1 % 4 != 3:
-                        self.select1 += 1
-                        self.charac1 = self.panel[self.select1]
-                        #self.prev1 = self.panel[self.select1].getIdle()
-                    if self.select1 % 4 == 3:
-                        self.select1 -= 3
-                        self.charac1 = self.panel[self.select1]
-                        #self.prev1 = self.panel[self.select1].getIdle()
-                if keys[K_RIGHT]:
-                    if self.select2 % 4 != 3:
-                        self.select2 += 2
-                        self.charac2 = self.panel[self.select2]
-                        #self.prev2 = self.panel[self.select2].getIdle()
-                    if self.select2 % 4 == 3:
-                        self.select2 -= 3
-                        self.charac2 = self.panel[self.select2]
-                        #self.prev2 = self.panel[self.select2].getIdle()
-
+                    #self.prev2 = self.panel[self.select2].getIdle()
+            if keys[K_a]:
+                if self.select1 % 4 != 0:
+                    self.select1 -= 1
+                    self.charac1 = self.panel[self.select1]
+                    #self.prev1 = self.panel[self.select1].getIdle()
+            if keys[K_LEFT]:
+                if self.select2 % 4 != 0:
+                    self.select2 -= 1
+                    self.charac2 = self.panel[self.select2]
+                    #self.prev2 = self.panel[self.select2].getIdle()
+            if keys[K_s]:
+                if self.select1/4+1 != self.max_filas and self.select1+4 < len(self.panel):
+                    self.select1 += 4
+                    self.charac1 = self.panel[self.select1]
+                    #self.prev1 = self.panel[self.select1].getIdle()
+            if keys[K_DOWN]:
+                if self.select2/4+1 != self.max_filas and self.select2+4 < len(self.panel):
+                    self.select2 += 4
+                    self.charac2 = self.panel[self.select2]
+                    #self.prev2 = self.panel[self.select2].getIdle()
+            if keys[K_d]:
+                if self.select1 % 4 != 3 and self.select1 != len(self.panel)-1:
+                    self.select1 += 1
+                    self.charac1 = self.panel[self.select1]
+                    #self.prev1 = self.panel[self.select1].getIdle()
+            if keys[K_RIGHT]:
+                if self.select2 % 4 != 3 and self.select2 != len(self.panel)-1:
+                    self.select2 += 1
+                    self.charac2 = self.panel[self.select2]
+                    #self.prev2 = self.panel[self.select2].getIdle()
 
     def on_draw(self, screen):
         screen.fill((0,0,0))
@@ -204,6 +192,25 @@ class ScenePanel(Scene):
             tmp_avatar_rect.centerx = WIDTH/3 + 110*column
             tmp_avatar_rect.centery = HEIGHT/4 + 110*fila
             screen.blit(i.avatar, tmp_avatar_rect)
+            #Mismo personaje por los dos
+            if self.charac1 == self.charac2 and self.charac1 == i:
+                marco_rect = self.marcoComun.get_rect()
+                marco_rect.centerx = WIDTH/3 + 110*column
+                marco_rect.centery = HEIGHT/4 - 5 + 110*fila
+                screen.blit(self.marcoComun, marco_rect)
+            #Personaje de jugador 1
+            elif self.charac1 == i:
+                marco_rect1 = self.marco1.get_rect()
+                marco_rect1.centerx = WIDTH/3 + 110*column
+                marco_rect1.centery = HEIGHT/4 - 5 + 110*fila
+                screen.blit(self.marco1, marco_rect1)
+            #Personaje de jugador 2
+            elif self.charac2 == i:
+                marco_rect2 = self.marco2.get_rect()
+                marco_rect2.centerx = WIDTH/3 + 110*column
+                marco_rect2.centery = HEIGHT/4 - 5 + 110*fila
+                screen.blit(self.marco2, marco_rect2)
+
             column += 1
 
 class SceneFight(Scene):

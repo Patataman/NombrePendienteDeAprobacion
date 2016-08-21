@@ -12,11 +12,13 @@ def load_image(filename, transparent=False):
 	except pygame.error, message:
 		raise SystemExit, message
 	''' Convierte la imagen a una de tipo de pygame'''
-	image = image.convert()
 	''' Si la imagen tiene transparencia, toma como transparencia el pixel superior izquierdo'''
 	if transparent:
-		color = image.get_at((0,0))
-		image.set_colorkey(color, RLEACCEL)
+		image = image.convert_alpha()
+		#color = image.get_at((0,0))
+		#image.set_colorkey(color, RLEACCEL)
+	else:
+		image = image.convert()
 	return image
 
 ''' Escribir texto '''

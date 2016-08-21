@@ -18,7 +18,7 @@ class Player:
 	def __init__(self, name):
 		self.name = name
 		self.sprites = load_image("assets/images/sprites/" + name + "_ficha.png", True)
-		self.avatar = load_image("assets/images/"+name+"_avatar.png", False)
+		self.avatar = load_image("assets/images/avatares/"+name+"_avatar.png", False)
 		self.state = 0
 		self.health = 100
 
