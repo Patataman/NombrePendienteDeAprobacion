@@ -102,10 +102,10 @@ class ScenePanel(Scene):
         self.max_filas = math.floor(len(self.panel)/4)+1
 
         #Carga la musica
-        #pygame.mixer.music.load("assets/music/title_theme.mp3")
-        #Pone la música a funcionar
         # loop = -1 -> Loop infinito
-        #pygame.mixer.music.play(-1)
+        #self.background_music = pygame.mixer.Sound("assets/sounds/352171__sirkoto51__boss-battle-loop-1.wav").play(-1)
+        self.select_music = pygame.mixer.Sound("assets/sounds/173327__soundnimja__blip-2.wav")
+        #Pone la música a funcionar
 
     def on_update(self, time):
         #O algo asi
@@ -120,10 +120,12 @@ class ScenePanel(Scene):
             #Se selecciona atrás
             if keys[K_F1]:
                 scene = SceneHome(self.director)
+                #self.background_music.stop()
                 self.director.change_scene(scene)
             #Se selecciona luchar
             if keys[K_F2]:
                 scene = SceneFight(self.director, self.charac1, self.charac2)
+                #self.background_music.stop()
                 self.director.change_scene(scene) 
             #Se selecciona un luchador
             if keys[K_SPACE]:
@@ -138,41 +140,49 @@ class ScenePanel(Scene):
                 if self.select1/4 != 0:
                     self.select1 -= 4
                     self.charac1 = self.panel[self.select1]
+                    self.select_music.play()
                     #self.prev1 = self.panel[self.select1].getIdle()
             if keys[K_UP]:
                 if self.select2/4 != 0:
                     self.select2 -= 4
                     self.charac2 = self.panel[self.select2]
+                    self.select_music.play()
                     #self.prev2 = self.panel[self.select2].getIdle()
             if keys[K_a]:
                 if self.select1 % 4 != 0:
                     self.select1 -= 1
                     self.charac1 = self.panel[self.select1]
+                    self.select_music.play()
                     #self.prev1 = self.panel[self.select1].getIdle()
             if keys[K_LEFT]:
                 if self.select2 % 4 != 0:
                     self.select2 -= 1
                     self.charac2 = self.panel[self.select2]
+                    self.select_music.play()
                     #self.prev2 = self.panel[self.select2].getIdle()
             if keys[K_s]:
                 if self.select1/4+1 != self.max_filas and self.select1+4 < len(self.panel):
                     self.select1 += 4
                     self.charac1 = self.panel[self.select1]
+                    self.select_music.play()
                     #self.prev1 = self.panel[self.select1].getIdle()
             if keys[K_DOWN]:
                 if self.select2/4+1 != self.max_filas and self.select2+4 < len(self.panel):
                     self.select2 += 4
                     self.charac2 = self.panel[self.select2]
+                    self.select_music.play()
                     #self.prev2 = self.panel[self.select2].getIdle()
             if keys[K_d]:
                 if self.select1 % 4 != 3 and self.select1 != len(self.panel)-1:
                     self.select1 += 1
                     self.charac1 = self.panel[self.select1]
+                    self.select_music.play()
                     #self.prev1 = self.panel[self.select1].getIdle()
             if keys[K_RIGHT]:
                 if self.select2 % 4 != 3 and self.select2 != len(self.panel)-1:
                     self.select2 += 1
                     self.charac2 = self.panel[self.select2]
+                    self.select_music.play()
                     #self.prev2 = self.panel[self.select2].getIdle()
 
     def on_draw(self, screen):
