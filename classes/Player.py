@@ -17,10 +17,15 @@ class Player:
 
 	def __init__(self, name):
 		self.name = name
-		self.sprites = load_image("assets/images/sprites/" + name + "_ficha.png", True)
+		self.sprites = load_sprites("assets/images/sprites/" + name + "_ficha.png", 200, 420)
 		self.avatar = load_image("assets/images/avatares/"+name+"_avatar.png", False)
-		self.state = 0
+		self.state = "idle"
 		self.health = 100
+		#Hay que añadir estado orientacion
+		#Añadir variable vulnerable
+
+
+		self.current_hframe = 0 # Lo necesitaremos para hacer el ciclo de animación
 
 	def getHurt(self, dmg):
 		self.health -= dmg
@@ -30,4 +35,7 @@ class Player:
 		else:
 			return 1	# El personaje sigue vivo
 
-	#muchas funciones...	
+	def update(self):
+		self.current_hframe += 1
+		if self.current_hframe == 3:
+			self.current_hframe = 0
