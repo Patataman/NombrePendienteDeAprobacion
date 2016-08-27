@@ -3,7 +3,7 @@
 from Director import Director
 from Functions import *
 from Player import *
-import pygame, sys, math, copy
+import pygame, sys, math, copy, time
 from pygame.locals import *
 #import Personajes
 
@@ -103,7 +103,8 @@ class ScenePanel(Scene):
 
         #Carga la musica
         # loop = -1 -> Loop infinito
-        #self.background_music = pygame.mixer.Sound("assets/sounds/352171__sirkoto51__boss-battle-loop-1.wav").play(-1)
+        self.background_music = pygame.mixer.Sound("assets/sounds/341362__sirkoto51__anime-encounter-loop-1.wav")
+        self.background_music.play(-1)
         self.select_music = pygame.mixer.Sound("assets/sounds/173327__soundnimja__blip-2.wav")
         #Pone la música a funcionar
 
@@ -120,13 +121,14 @@ class ScenePanel(Scene):
             #Se selecciona atrás
             if keys[K_F1]:
                 scene = SceneHome(self.director)
-                #self.background_music.stop()
+                self.background_music.stop()
                 self.director.change_scene(scene)
             #Se selecciona luchar
             if keys[K_F2]:
                 scene = SceneFight(self.director, self.charac1, self.charac2)
-                #self.background_music.stop()
-                self.director.change_scene(scene) 
+                self.director.change_scene(scene)
+                self.background_music.stop()
+                pygame.mixer.Sound("assets/sounds/58773__syna-max__anime-shing.wav").play()
             #Se selecciona un luchador
             if keys[K_SPACE]:
                 #Se guarda el pj seleccionado y se actualiza la vista previa
