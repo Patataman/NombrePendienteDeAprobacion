@@ -24,12 +24,10 @@ def main():
  	# Se inicializan los personajes y avatares
     player1 = Player("pepi")
     player2 = Player("pepo")
-    avatar1 = load_image("assets/images/pepi_avatar.png")
-    avatar1Rect = avatar1.get_rect()
+    avatar1Rect = player1.avatar.get_rect()
     avatar1Rect.centerx = 41
     avatar1Rect.centery = 40
-    avatar2 = load_image("assets/images/pepo_avatar.png")
-    avatar2Rect = avatar2.get_rect()
+    avatar2Rect = player2.avatar.get_rect()
     avatar2Rect.centerx = 983
     avatar2Rect.centery = 40
     
@@ -42,7 +40,7 @@ def main():
     hudP2 = pygame.Rect(564, 40, 400, 10)
 
     while True:
-        time = clock.tick(60)
+        time = clock.tick(10)
         keys = pygame.key.get_pressed()
         for eventos in pygame.event.get():
             if eventos.type == QUIT:
@@ -58,6 +56,14 @@ def main():
             player2.getHurt(5)
         elif keys[K_l]:
             player2.getHurt(12)
+
+        # Cambiar estado    
+        elif keys[K_v]:
+            player1.state = "idle"
+        elif keys[K_b]:
+            player1.state = "avanzar"    
+
+
         hudP1.width = player1.health*4
         hudP2.width = player2.health*4
         hudP2.left = 564+(400-player2.health*4)
@@ -71,8 +77,12 @@ def main():
         screen.blit(timeCD, time_rect)
         pygame.draw.rect(screen,(255,255,255),hudP1)
         pygame.draw.rect(screen,(255,255,255),hudP2)
-        screen.blit(avatar1, avatar1Rect)
-        screen.blit(avatar2, avatar2Rect)
+        screen.blit(player1.avatar, avatar1Rect)
+        screen.blit(player2.avatar, avatar2Rect)
+        # Actualizamos y pintamos personaje
+        player1.update()
+        screen.blit(player1.sprites[player1.state][player1.current_hframe], (200, 200)) 
+
         pygame.display.flip()
     return 0
  
