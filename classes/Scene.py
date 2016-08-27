@@ -231,8 +231,8 @@ class SceneFight(Scene):
         screen = pygame.display.set_mode((WIDTH, HEIGHT))
         pygame.display.set_caption("FightSene")
         # Se inicializan los personajes y avatares
-        self.player2 = copy.copy(player2)
         self.player1 = copy.copy(player1)
+        self.player2 = copy.copy(player2)
 
         self.avatar1Rect = self.player1.avatar.get_rect()
         self.avatar1Rect.centerx = 41
@@ -258,14 +258,24 @@ class SceneFight(Scene):
     def on_event(self, time, event):
         keys = pygame.key.get_pressed()
         if pygame.KEYDOWN:
-            if keys[K_a]:
+            if keys[K_2]:
                 self.player1.getHurt(5)
-            elif keys[K_d]:
+            if keys[K_3]:
                 self.player1.getHurt(12)
-            elif keys[K_j]:
+            if keys[K_j]:
                 self.player2.getHurt(5)
-            elif keys[K_l]:
+            if keys[K_k]:
                 self.player2.getHurt(12)
+            if keys[K_d]:
+                self.player1.state = "avanzar"
+            if keys[K_RIGHT]:
+                self.player2.state = "avanzar"
+            if (keys[K_j]==0 and keys[K_k]==0 and keys[K_d]==0 and keys[K_a]==0
+                    and keys[K_s]==0 and self.player1.state != "jump"):
+                self.player1.state = "idle"
+            if (keys[K_LEFT]==0 and keys[K_RIGHT]==0 and keys[K_DOWN]==0 and keys[K_2]==0
+                    and keys[K_3]==0 and self.player2.state != "jump"):
+                self.player2.state = "idle"
 
     def on_draw(self, screen):
         screen.fill((0,0,0))
@@ -276,3 +286,8 @@ class SceneFight(Scene):
         pygame.draw.rect(screen,(255,255,255),self.hudP2)
         screen.blit(self.player1.avatar, self.avatar1Rect)
         screen.blit(self.player2.avatar, self.avatar2Rect)
+        # Actualizamos y pintamos personaje
+        self.player1.update()
+        self.player2.update()
+        screen.blit(pygame.transform.flip(self.player1.sprites[self.player1.state][self.player1.current_hframe], False, False), (200, 200))
+        screen.blit(pygame.transform.flip(self.player2.sprites[self.player2.state][self.player2.current_hframe], True, False), (600, 200))

@@ -28,7 +28,7 @@ class Director:
 		   y la siguiente la reconoce a las 200ms'''
 		pygame.key.set_repeat(10, 200)
 		while not self.quit_flag:
-			time = self.clock.tick(60)
+			time = self.clock.tick(10)
 
 			# Eventos de Salida
 			for event in pygame.event.get():

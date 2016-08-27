@@ -23,46 +23,6 @@ def load_image(filename, transparent=False):
 
 ''' Escribir texto '''
 
-def load_sprites(filename, width, height):
-	"""Los sprites de los personajes se cargan desde una imagen donde están todos contenidos y
-	después se genera una lista de listas ordenada con cada imagen de la animación"""
-
-	# En una primera instancia vamos a definir que cada frame tiene 420 de alto y 200 de ancho
-
-	ficha = {}
-
-	sprite_ficha = load_image(filename)
-	#Descomentar la siguiente linea para probar
-	#sprite_ficha = load_image("assets/images/sprites/SpriteMatamePorfavor_ficha.png")
-	framePorLinea = 6
-	ficha["idle"] = []
-	ficha["avanzar"] = []
-	ficha["defender"] = []
-	ficha["defenderSalto"] = []
-	ficha["ataqueDebil"] = []
-	ficha["ataqueFuerte"] = []
-	ficha["saltar"] = []
-	ficha["pegarSalto"] = []
-	ficha["golpeBajo"] = []
-	ficha["recibir"] = []
-	ficha["Morir"] = []
-	for i in range(framePorLinea):
-
-		ficha["idle"].append(sprite_ficha.subsurface((i*200, height*0, width, height)))
-		ficha["avanzar"].append(sprite_ficha.subsurface((i*200, height*1, width, height)))
-		ficha["defender"].append(sprite_ficha.subsurface((i*200, height*2, width, height)))
-		ficha["defenderSalto"].append(sprite_ficha.subsurface((i*200, height*3, width, height)))
-		ficha["ataqueDebil"].append(sprite_ficha.subsurface((i*200, height*4, width, height)))
-		ficha["ataqueFuerte"].append(sprite_ficha.subsurface((i*200, height*5, width, height)))
-		ficha["saltar"].append(sprite_ficha.subsurface((i*200, height*6, width, height)))
-		ficha["pegarSalto"].append(sprite_ficha.subsurface((i*200, height*7, width, height)))
-		ficha["golpeBajo"].append(sprite_ficha.subsurface((i*200, height*8, width, height)))
-		ficha["recibir"].append(sprite_ficha.subsurface((i*200, height*9, width, height)))
-		ficha["Morir"].append(sprite_ficha.subsurface((i*200, height*10, width, height)))
-
-	return ficha
-
-
 def texto(texto, posx, posy, size=25, color=(255, 255, 255)):
     fuente = pygame.font.Font("assets/fonts/Lato-Regular.ttf", size)
     salida = fuente.render(texto, 1, color)
