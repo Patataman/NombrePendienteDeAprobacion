@@ -17,8 +17,8 @@ def load_image(filename, transparent=False):
 		image = image.convert_alpha()
 		#color = image.get_at((0,0))
 		#image.set_colorkey(color, RLEACCEL)
-	else:
-		image = image.convert()
+	#else:
+		#image = image.convert()
 	return image
 
 ''' Escribir texto '''

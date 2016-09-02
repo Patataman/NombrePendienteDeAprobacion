@@ -235,24 +235,24 @@ class SceneFight(Scene):
         self.player2 = copy.copy(player2)
 
         self.avatar1Rect = self.player1.avatar.get_rect()
-        self.avatar1Rect.centerx = 41
-        self.avatar1Rect.centery = 40
+        self.avatar1Rect.centerx = 53
+        self.avatar1Rect.centery = 52
 
         self.avatar2Rect = self.player2.avatar.get_rect()
-        self.avatar2Rect.centerx = 983
-        self.avatar2Rect.centery = 40
+        self.avatar2Rect.centerx = 971
+        self.avatar2Rect.centery = 52
         
         self.countdown = 60 # tiempo de combate
         self.time2 = 0
 
         # Barras de vida
-        self.hudP1 = pygame.Rect(60, 40, 400, 10)
-        self.hudP2 = pygame.Rect(564, 40, 400, 10)
+        self.hudP1 = pygame.Rect(99, 52, 400, 10)
+        self.hudP2 = pygame.Rect(522, 52, 400, 10)
 
     def on_update(self, time):
         self.hudP1.width = self.player1.health*4
         self.hudP2.width = self.player2.health*4
-        self.hudP2.left = 564+(400-self.player2.health*4)
+        self.hudP2.left = 522+(400-self.player2.health*4)
         self.time2 += time
 
     def on_event(self, time, event):
@@ -268,6 +268,19 @@ class SceneFight(Scene):
                 self.player2.getHurt(12)
             if keys[K_d]:
                 self.player1.state = "avanzar"
+                self.player1.x += 30
+                if self.player1.x >= 550:
+                    self.player1.orientacion = 4
+                else:
+                    self.player1.orientacion = 0   
+            if keys[K_a]:
+                self.player1.state = "defender"
+                self.player1.x -= 30
+                if self.player1.x >= 550:
+                    self.player1.orientacion = 4
+                else:
+                    self.player1.orientacion = 0          
+
             if keys[K_RIGHT]:
                 self.player2.state = "avanzar"
             if (keys[K_j]==0 and keys[K_k]==0 and keys[K_d]==0 and keys[K_a]==0
@@ -279,7 +292,7 @@ class SceneFight(Scene):
 
     def on_draw(self, screen):
         screen.fill((0,0,0))
-        timeCD, time_rect = texto(str(self.countdown - int(math.floor(self.time2/1000))), 512, 45)
+        timeCD, time_rect = texto(str(self.countdown - int(math.floor(self.time2/1000))), 512, 38)
 
         screen.blit(timeCD, time_rect)
         pygame.draw.rect(screen,(255,255,255),self.hudP1)
@@ -289,5 +302,14 @@ class SceneFight(Scene):
         # Actualizamos y pintamos personaje
         self.player1.update()
         self.player2.update()
-        screen.blit(pygame.transform.flip(self.player1.sprites[self.player1.state][self.player1.current_hframe], False, False), (200, 200))
-        screen.blit(pygame.transform.flip(self.player2.sprites[self.player2.state][self.player2.current_hframe], True, False), (600, 200))
+        #screen.blit(pygame.transform.flip(self.player1.sprites[self.player1.state][self.player1.current_hframe], False, False), (200, 200))
+        #screen.blit(pygame.transform.flip(self.player2.sprites[self.player2.state][self.player2.current_hframe], True, False), (600, 200))
+        screen.blit(self.player1.sprites[self.player1.state][self.player1.current_hframe+self.player1.orientacion], (self.player1.x, self.player1.y)) 
+
+    def calcularOrientacion(self):
+        if (self.player1.x < self.player2.x): # Están colocados naturalmente
+            self.player1.x = 0
+            self.player2.x = 4
+        else:
+            self.player1.x = 4
+            self.player2.x = 0

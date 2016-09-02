@@ -40,7 +40,7 @@ def main():
     hudP2 = pygame.Rect(564, 40, 400, 10)
 
     while True:
-        time = clock.tick(10)
+        time = clock.tick(1)
         keys = pygame.key.get_pressed()
         for eventos in pygame.event.get():
             if eventos.type == QUIT:

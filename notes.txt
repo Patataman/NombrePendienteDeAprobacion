@@ -1,0 +1,2 @@
+Falta el sprite del personaje avanzando en salto
+Hay que gestionar los momentos de vulnerabilidad tras las acciones.
