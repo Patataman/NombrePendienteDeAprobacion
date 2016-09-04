@@ -43,9 +43,9 @@ class SceneHome(Scene):
         self.titulo, self.titulo_rect = texto('Titulo o imagen o yuqse', WIDTH/2, HEIGHT/4, 75, (255,255,255))
 
         self.flecha = load_image("assets/images/flecha.png")
-        #self.flecha = pygame.transform.scale(self.flecha, (self.iniciar.get_width()/2,self.iniciar.get_height()/2+10))
+        #self.flecha = pygame.transform.scale(self.flecha, (self.iniciar.get_width()/4*3,self.iniciar.get_height()/4*3+10))
         self.flecha_rect = self.flecha.get_rect()
-        self.flecha_rect.centerx = WIDTH/2 - self.iniciar.get_width()/2 - 50
+        self.flecha_rect.centerx = WIDTH/2 - self.iniciar.get_width()/4*3 - 50
         self.flecha_rect.centery = HEIGHT/2
 
 
@@ -80,17 +80,26 @@ class ScenePanel(Scene):
         pygame.display.set_caption("Selección de personaje")
         self.select1, self.select2 = 0,0
 
-        nombres = open('classes/personajes','r').read().split('\n')
+        import json
+
+        pjs = json.load(open('classes/personajes.json'))
 
         #Lista de objetos personajes (siendo cada posición un tipo de personaje)
         #El panel se sitúa en el medio de la pantalla y
         # a los lados la vista previa del pj
         self.panel = []
-        for nomb in nombres:
-            tmp_pj = Player(nomb)
+        for pj in pjs:
+            tmp_pj = Player(pj)
             self.panel.append(tmp_pj)
         
-        self.charac1, self.charac2, self.prev1, self.prev2 = self.panel[0],self.panel[0],None,None
+        self.charac1, self.charac2 = self.panel[0], self.panel[0]
+        self.prev1, self.prev2 = copy.copy(self.panel[0]), copy.copy(self.panel[0])
+        self.nomb1, self.nomb1_rect = texto(self.prev1.name, 150, 100, 35)
+        self.nomb2, self.nomb2_rect = texto(self.prev2.name, WIDTH-150, 100, 35)
+        self.prev1.orientacion = 0
+        self.prev2.orientacion = 4
+        self.prev1.x = 75
+        self.prev2.x = 800
         self.marco1 = load_image("assets/images/select1.png", True)
         self.marco2 = load_image("assets/images/select2.png", True)
         self.marcoComun = load_image("assets/images/select12.png", True)
@@ -110,9 +119,8 @@ class ScenePanel(Scene):
 
     def on_update(self, time):
         #O algo asi
-        pass
-        #self.prev1.idle()
-        #self.prev2.idle()
+        self.prev1.update()
+        self.prev2.update()
 
     def on_event(self, time, event):
         #Al pulsar una tecla...
@@ -133,65 +141,74 @@ class ScenePanel(Scene):
             if keys[K_SPACE]:
                 #Se guarda el pj seleccionado y se actualiza la vista previa
                 self.charac1 = self.panel[self.select1]
-                self.prev1 = self.panel[self.select1]
+                self.prev1 = copy.copy(self.panel[self.select1])
+                self.prev1.orientacion = 0
+                self.prev1.x = 75
+                self.nomb1, self.nomb1_rect = texto(self.prev1.name, 150, 100, 35)
             if keys[K_RETURN]:
                 #Se guarda el pj seleccionado y se actualiza la vista previa
                 self.charac2 = self.panel[self.select2]
                 self.prev2 = self.panel[self.select2]
+                self.prev2.orientacion = 4
+                self.prev2.x = 800
+                self.nomb2, self.nomb2_rect = texto(self.prev2.name, WIDTH-150, 100, 35)
             if keys[K_w]:
                 if self.select1/4 != 0:
                     self.select1 -= 4
                     self.charac1 = self.panel[self.select1]
                     self.select_music.play()
-                    #self.prev1 = self.panel[self.select1].getIdle()
             if keys[K_UP]:
                 if self.select2/4 != 0:
                     self.select2 -= 4
                     self.charac2 = self.panel[self.select2]
                     self.select_music.play()
-                    #self.prev2 = self.panel[self.select2].getIdle()
             if keys[K_a]:
                 if self.select1 % 4 != 0:
                     self.select1 -= 1
                     self.charac1 = self.panel[self.select1]
                     self.select_music.play()
-                    #self.prev1 = self.panel[self.select1].getIdle()
             if keys[K_LEFT]:
                 if self.select2 % 4 != 0:
                     self.select2 -= 1
                     self.charac2 = self.panel[self.select2]
                     self.select_music.play()
-                    #self.prev2 = self.panel[self.select2].getIdle()
             if keys[K_s]:
                 if self.select1/4+1 != self.max_filas and self.select1+4 < len(self.panel):
                     self.select1 += 4
                     self.charac1 = self.panel[self.select1]
                     self.select_music.play()
-                    #self.prev1 = self.panel[self.select1].getIdle()
             if keys[K_DOWN]:
                 if self.select2/4+1 != self.max_filas and self.select2+4 < len(self.panel):
                     self.select2 += 4
                     self.charac2 = self.panel[self.select2]
                     self.select_music.play()
-                    #self.prev2 = self.panel[self.select2].getIdle()
             if keys[K_d]:
                 if self.select1 % 4 != 3 and self.select1 != len(self.panel)-1:
                     self.select1 += 1
                     self.charac1 = self.panel[self.select1]
                     self.select_music.play()
-                    #self.prev1 = self.panel[self.select1].getIdle()
             if keys[K_RIGHT]:
                 if self.select2 % 4 != 3 and self.select2 != len(self.panel)-1:
                     self.select2 += 1
                     self.charac2 = self.panel[self.select2]
                     self.select_music.play()
-                    #self.prev2 = self.panel[self.select2].getIdle()
 
     def on_draw(self, screen):
         screen.fill((0,0,0))
         screen.blit(self.atras, self.atras_rect)
         screen.blit(self.sig, self.sig_rect)
+        screen.blit(self.nomb1, self.nomb1_rect)
+        screen.blit(self.nomb2, self.nomb2_rect)
         self.dibujarPanel(screen)
+
+        screen.blit(pygame.transform.scale(self.prev1.sprites[self.prev1.state] \
+                                        [self.prev1.current_hframe+self.prev1.orientacion], \
+                                        (self.prev1.sprites[self.prev1.state][self.prev1.current_hframe+self.prev1.orientacion].get_width()/4*3,self.prev1.sprites[self.prev1.state][self.prev1.current_hframe+self.prev1.orientacion].get_height()/4*3)), \
+                                        (self.prev1.x, self.prev1.y))
+        screen.blit(pygame.transform.scale(self.prev2.sprites[self.prev2.state] \
+                                        [self.prev2.current_hframe+self.prev2.orientacion], \
+                                        (self.prev2.sprites[self.prev2.state][self.prev2.current_hframe+self.prev2.orientacion].get_width()/4*3,self.prev2.sprites[self.prev2.state][self.prev2.current_hframe+self.prev2.orientacion].get_height()/4*3)), \
+                                        (self.prev2.x, self.prev2.y))
 
     def dibujarPanel(self,screen):
         fila = 0
@@ -232,7 +249,9 @@ class SceneFight(Scene):
         pygame.display.set_caption("FightSene")
         # Se inicializan los personajes y avatares
         self.player1 = copy.copy(player1)
+        self.player1.x = 75
         self.player2 = copy.copy(player2)
+        self.player2.x = 800
 
         self.avatar1Rect = self.player1.avatar.get_rect()
         self.avatar1Rect.centerx = 53
@@ -241,6 +260,11 @@ class SceneFight(Scene):
         self.avatar2Rect = self.player2.avatar.get_rect()
         self.avatar2Rect.centerx = 971
         self.avatar2Rect.centery = 52
+
+        self.nomb1, self.nomb1_rect = texto(self.player1.name, 150, 20)
+        self.nomb2, self.nomb2_rect = texto(self.player2.name, WIDTH-150, 20)
+        self.nomb1_rect.centerx = self.nomb1.get_width() + self.player1.avatar.get_width()
+        self.nomb2_rect.centerx = WIDTH - self.nomb2.get_width() - self.player2.avatar.get_width()
         
         self.countdown = 60 # tiempo de combate
         self.time2 = 0
@@ -250,10 +274,13 @@ class SceneFight(Scene):
         self.hudP2 = pygame.Rect(522, 52, 400, 10)
 
     def on_update(self, time):
+        self.calcularOrientacion()
         self.hudP1.width = self.player1.health*4
         self.hudP2.width = self.player2.health*4
         self.hudP2.left = 522+(400-self.player2.health*4)
         self.time2 += time
+        self.player1.update()
+        self.player2.update()
 
     def on_event(self, time, event):
         keys = pygame.key.get_pressed()
@@ -267,19 +294,25 @@ class SceneFight(Scene):
             if keys[K_k]:
                 self.player2.getHurt(12)
             if keys[K_d]:
-                self.player1.state = "avanzar"
-                self.player1.x += 30
-                if self.player1.x >= 550:
-                    self.player1.orientacion = 4
+                if self.player1.orientacion == 0:
+                    self.player1.avanzar()
                 else:
-                    self.player1.orientacion = 0   
+                    self.player1.defender()
             if keys[K_a]:
-                self.player1.state = "defender"
-                self.player1.x -= 30
-                if self.player1.x >= 550:
-                    self.player1.orientacion = 4
+                if self.player1.orientacion == 4:
+                    self.player1.avanzar()
                 else:
-                    self.player1.orientacion = 0          
+                    self.player1.defender()
+            if keys[K_LEFT]:
+                if self.player2.orientacion == 4:
+                    self.player2.avanzar()
+                else:
+                    self.player2.defender()
+            if keys[K_RIGHT]:
+                if self.player2.orientacion == 0:
+                    self.player2.avanzar()
+                else:
+                    self.player2.defender()
 
             if keys[K_RIGHT]:
                 self.player2.state = "avanzar"
@@ -298,18 +331,25 @@ class SceneFight(Scene):
         pygame.draw.rect(screen,(255,255,255),self.hudP1)
         pygame.draw.rect(screen,(255,255,255),self.hudP2)
         screen.blit(self.player1.avatar, self.avatar1Rect)
-        screen.blit(self.player2.avatar, self.avatar2Rect)
+        screen.blit(pygame.transform.flip(self.player2.avatar, True, False), self.avatar2Rect)
+        screen.blit(self.nomb1, self.nomb1_rect)
+        screen.blit(self.nomb2, self.nomb2_rect)
         # Actualizamos y pintamos personaje
-        self.player1.update()
-        self.player2.update()
         #screen.blit(pygame.transform.flip(self.player1.sprites[self.player1.state][self.player1.current_hframe], False, False), (200, 200))
         #screen.blit(pygame.transform.flip(self.player2.sprites[self.player2.state][self.player2.current_hframe], True, False), (600, 200))
-        screen.blit(self.player1.sprites[self.player1.state][self.player1.current_hframe+self.player1.orientacion], (self.player1.x, self.player1.y)) 
+        screen.blit(pygame.transform.scale(self.player1.sprites[self.player1.state] \
+            [self.player1.current_hframe+self.player1.orientacion], \
+            (self.player1.sprites[self.player1.state][self.player1.current_hframe+self.player1.orientacion].get_width()/4*3,self.player1.sprites[self.player1.state][self.player1.current_hframe+self.player1.orientacion].get_height()/4*3)), \
+            (self.player1.x, self.player1.y))
+        screen.blit(pygame.transform.scale(self.player2.sprites[self.player2.state] \
+            [self.player2.current_hframe+self.player2.orientacion], \
+            (self.player2.sprites[self.player2.state][self.player2.current_hframe+self.player2.orientacion].get_width()/4*3,self.player2.sprites[self.player2.state][self.player2.current_hframe+self.player2.orientacion].get_height()/4*3)), \
+            (self.player2.x, self.player2.y))
 
     def calcularOrientacion(self):
         if (self.player1.x < self.player2.x): # Están colocados naturalmente
-            self.player1.x = 0
-            self.player2.x = 4
+            self.player1.orientacion = 0
+            self.player2.orientacion = 4
         else:
-            self.player1.x = 4
-            self.player2.x = 0
+            self.player1.orientacion = 4
+            self.player2.orientacion = 0

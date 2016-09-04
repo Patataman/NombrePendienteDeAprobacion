@@ -1,10 +1,9 @@
 # -*- coding: utf-8 -*-
 
-import pygame
-from pygame.locals import *
+from pygame import sprite
 from Functions import *
 
-class Player:
+class Player(sprite.Sprite):
 	"""Representa cada personaje del juego durante la partida.
 
 	El objeto Player contiene todos los datos comunes a todos
@@ -15,17 +14,18 @@ class Player:
 	Este objeto se debe inicializar después de terminar la
 	selección de personajes con los datos del personaje escogido."""
 
-	def __init__(self, name):
-		self.name = name
-		self.sprites = self.load_sprites("assets/images/sprites/Sprite_" + name + "_ficha.png", 200, 420)
-		self.avatar = load_image("assets/images/avatares/"+name+"_avatar.png", False)
+	def __init__(self, jsonObject):
+		sprite.Sprite.__init__(self)
+		self.name = jsonObject['nombre']
+		self.sprites = self.load_sprites(jsonObject['sprites'], 200, 420)
+		self.avatar = load_image(jsonObject['avatar'], False)
 		self.state = "idle"
 		self.health = 100
 		# Hacia donde mira (0 -> derecha, 4 -> izquierda)
 		self.current_hframe = 0 # Lo necesitaremos para hacer el ciclo de animación
 		self.orientacion = 0
-		self.x = 200
-		self.y = 200
+		self.x = 75
+		self.y = 250
 		self.vulnerable = True
 		self.golpeando = False
 		# Tanto el salto como cualquier acción dura varias iteraciones, por lo que se debe de tener en cuenta
@@ -44,11 +44,11 @@ class Player:
 		self.state = "avanzar"
 		self.vulnerable = True
 		if self.orientacion == 0: # Avanzamos hacia la derecha
-			if self.x <= 920: # No estamos en los límites del escenario
-				self.x += 10
+			if self.x <= 800: # No estamos en los límites del escenario
+				self.x += 25
 		else:
-			if self.x >= 120: # No estamos en los límites del escenario
-				self.x -=10
+			if self.x >= 25: # No estamos en los límites del escenario
+				self.x -= 25
 
 	def defender(self):
 		"""Durante la defensa el personaje será invulnerable a cualquier ataque y además avanzará hacia atrás.
@@ -59,11 +59,11 @@ class Player:
 		self.state = "defender"
 		self.vulnerable = False
 		if self.orientacion == 0: # Avanzamos hacia la derecha
-			if self.x <= 920: # No estamos en los límites del escenario
-				self.x += 10
+			if self.x >= 25: # No estamos en los límites del escenario
+				self.x -= 25
 		else:
-			if self.x >= 120: # No estamos en los límites del escenario
-				self.x -=10
+			if self.x <= 800: # No estamos en los límites del escenario
+				self.x += 25
 
 	def defenderSalto(self):
 		"""El personaje podrá saltar hacia atrás manteniendo su defensa.
@@ -153,7 +153,7 @@ class Player:
 
 		sprite_ficha = load_image(filename)
 		#Descomentar la siguiente linea para probar
-		sprite_ficha = load_image("assets/images/sprites/Sprite_chachiWachi_ficha.png")
+		#sprite_ficha = load_image("assets/images/sprites/Sprite_chachiWachi_ficha.png")
 		framePorLinea = 8
 		ficha["idle"] = []
 		ficha["avanzar"] = []

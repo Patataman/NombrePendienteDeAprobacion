@@ -1,0 +1,11 @@
+[
+	{"nombre":"pepi",
+	"sprites":"assets/images/sprites/Sprite_pepi_ficha.png",
+	"avatar":"assets/images/avatares/pepi_avatar.png"},
+	{"nombre":"pepo",
+	"sprites":"assets/images/sprites/Sprite_pepo_ficha.png",
+	"avatar":"assets/images/avatares/pepo_avatar.png"},
+	{"nombre":"Tio molongui",
+	"sprites":"assets/images/sprites/Sprite_chachiWachi_ficha.png",
+	"avatar":"assets/images/avatares/chachiWachi_avatar.png"}
+]
