@@ -42,7 +42,7 @@ class SceneHome(Scene):
         self.iniciar, self.iniciar_rect = texto('Seleccion de personajes', WIDTH/2, HEIGHT/2, 40)
         self.titulo, self.titulo_rect = texto('Titulo o imagen o yuqse', WIDTH/2, HEIGHT/4, 75, (255,255,255))
 
-        self.flecha = load_image("assets/images/flecha.png")
+        self.flecha = load_image("assets/images/misc/flecha.png")
         #self.flecha = pygame.transform.scale(self.flecha, (self.iniciar.get_width()/4*3,self.iniciar.get_height()/4*3+10))
         self.flecha_rect = self.flecha.get_rect()
         self.flecha_rect.centerx = WIDTH/2 - self.iniciar.get_width()/4*3 - 50
@@ -100,9 +100,9 @@ class ScenePanel(Scene):
         self.prev2.orientacion = 4
         self.prev1.x = 75
         self.prev2.x = 800
-        self.marco1 = load_image("assets/images/select1.png", True)
-        self.marco2 = load_image("assets/images/select2.png", True)
-        self.marcoComun = load_image("assets/images/select12.png", True)
+        self.marco1 = load_image("assets/images/misc/select1.png", True)
+        self.marco2 = load_image("assets/images/misc/select2.png", True)
+        self.marcoComun = load_image("assets/images/misc/select12.png", True)
 
         self.atras, self.atras_rect = texto('Back F1', 100, HEIGHT-100, 40)
         self.sig, self.sig_rect = texto('Figth! F2', WIDTH-100 , HEIGHT-100, 40)
