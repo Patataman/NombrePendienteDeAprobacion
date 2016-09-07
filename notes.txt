@@ -1,2 +1,7 @@
-Falta el sprite del personaje avanzando en salto
+Falta el sprite del personaje avanzando en salto (puede no ser necesario)
 Hay que gestionar los momentos de vulnerabilidad tras las acciones.
+Añadir en los controles las restricciones de CD de acciones.
+Añadir en los controles las restricciones para acciones que implequen una misma tecla
+
+En la pantalla de selección, la animación del personaje seleccionado deberia cambiar cuando mueves el cuadrao
+y la seleccion debería ser en plan fijar y sólo entonces dejar luchar

@@ -44,7 +44,7 @@ class Player(sprite.Sprite):
 		self.state = "avanzar"
 		self.vulnerable = True
 		if self.orientacion == 0: # Avanzamos hacia la derecha
-			if self.x <= 800: # No estamos en los límites del escenario
+			if self.x <= 850: # No estamos en los límites del escenario
 				self.x += 25
 		else:
 			if self.x >= 25: # No estamos en los límites del escenario
@@ -62,7 +62,7 @@ class Player(sprite.Sprite):
 			if self.x >= 25: # No estamos en los límites del escenario
 				self.x -= 25
 		else:
-			if self.x <= 800: # No estamos en los límites del escenario
+			if self.x <= 850: # No estamos en los límites del escenario
 				self.x += 25
 
 	def defenderSalto(self):
@@ -118,13 +118,30 @@ class Player(sprite.Sprite):
 		self.vulnerable = True
 		self.cdSalto = 1 # Hay que apañar la formula de movimiento en salto
 	def pegarSalto(self):
-		""""""
+		"""Durante un salto, si el jugador pulsa alguno de los botones de ataque, el personaje pasará
+		ejecutar un golpe aereo que durara hasta el final del salto, no podrá realizar ninguna otra
+		acción durante el salto, sin embargo podrá modificar la posición horizontalmente desplazandose
+		según la dirección pulsada
+		"""
 
-	def golpeBajo(self):
-		""""""
+		self.state = "pegarSalto"
+		self.vulnerable = True
+		self.golpeando = True
+		self.cdAction = self.cdSalto
+
+	def ataqueBajo(self):
+		"""El golpe bajo no se diferencia en nada del golpe flojo"""
+
+		self.state = "ataqueBajo"
+		self.vulnerable = True
+		self.golpeando = True
+		self.cdAction = 10
 
 	def getHurt(self, dmg):
-		""""""
+		"""Cuando un personaje recibe daño, este se resta de sus puntos de vida actuales. En caso de estos
+		lleguen a 0 o menos, el personaje habrá sido debilitado, perdiendo el enfrentamiento.
+		Cuando el personaje es debilitado, la función devuelve 0, en caso contrario, 1.
+		"""
 
 		self.health -= dmg
 		if self.health < 1:
@@ -163,7 +180,7 @@ class Player(sprite.Sprite):
 		ficha["ataqueFuerte"] = []
 		ficha["saltar"] = []
 		ficha["pegarSalto"] = []
-		ficha["golpeBajo"] = []
+		ficha["ataqueBajo"] = []
 		ficha["recibir"] = []
 		ficha["Morir"] = []
 		for i in range(framePorLinea):
@@ -175,7 +192,7 @@ class Player(sprite.Sprite):
 			ficha["ataqueFuerte"].append(sprite_ficha.subsurface((i*200, height*5, width, height)))
 			ficha["saltar"].append(sprite_ficha.subsurface((i*200, height*6, width, height)))
 			ficha["pegarSalto"].append(sprite_ficha.subsurface((i*200, height*7, width, height)))
-			ficha["golpeBajo"].append(sprite_ficha.subsurface((i*200, height*8, width, height)))
+			ficha["ataqueBajo"].append(sprite_ficha.subsurface((i*200, height*8, width, height)))
 			ficha["recibir"].append(sprite_ficha.subsurface((i*200, height*9, width, height)))
 			ficha["Morir"].append(sprite_ficha.subsurface((i*200, height*10, width, height)))
 

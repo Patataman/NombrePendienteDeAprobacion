@@ -293,6 +293,8 @@ class SceneFight(Scene):
                 self.player2.getHurt(5)
             if keys[K_k]:
                 self.player2.getHurt(12)
+
+            # Controles Player1                
             if keys[K_d]:
                 if self.player1.orientacion == 0:
                     self.player1.avanzar()
@@ -302,7 +304,17 @@ class SceneFight(Scene):
                 if self.player1.orientacion == 4:
                     self.player1.avanzar()
                 else:
-                    self.player1.defender()
+                    self.player1.defender()           
+            if keys[K_w]:
+                self.player1.saltar()
+            if keys[K_j]:
+                self.player1.ataqueDebil()
+            if keys[K_k]:
+                self.player1.ataqueFuerte()
+            if keys[K_s] and (keys[K_k] or keys[K_j]):
+                self.player1.ataqueBajo()    
+
+            # Controles Player2
             if keys[K_LEFT]:
                 if self.player2.orientacion == 4:
                     self.player2.avanzar()
@@ -313,14 +325,22 @@ class SceneFight(Scene):
                     self.player2.avanzar()
                 else:
                     self.player2.defender()
+            if keys[K_UP]:
+                self.player2.saltar()
+            if keys[K_KP8]:
+                self.player2.ataqueDebil()
+            if keys[K_KP9]:
+                self.player2.ataqueFuerte()
+            if keys[K_DOWN] and (keys[K_KP8] or keys[K_KP9]):
+                self.player2.ataqueBajo()        
 
-            if keys[K_RIGHT]:
-                self.player2.state = "avanzar"
+
+
             if (keys[K_j]==0 and keys[K_k]==0 and keys[K_d]==0 and keys[K_a]==0
                     and keys[K_s]==0 and self.player1.state != "jump"):
                 self.player1.state = "idle"
-            if (keys[K_LEFT]==0 and keys[K_RIGHT]==0 and keys[K_DOWN]==0 and keys[K_2]==0
-                    and keys[K_3]==0 and self.player2.state != "jump"):
+            if (keys[K_LEFT]==0 and keys[K_RIGHT]==0 and keys[K_DOWN]==0 and keys[K_KP8]==0
+                    and keys[K_KP9]==0 and self.player2.state != "jump"):
                 self.player2.state = "idle"
 
     def on_draw(self, screen):
