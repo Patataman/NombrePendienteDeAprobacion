@@ -104,7 +104,7 @@ class Player(sprite.Sprite):
 		Mientras se está en el aire las maniobras son reducidas, por lo que durante esta acción la función
 		actualizar devuelve un entero que representa la duración del salto. Mientras este número sea positivo,
 		el personaje estará en el aire, pudiendo sólo realizar las acciones "defenderSalto", "avanzarSalto"
-		y "pegarSalto".
+		y "ataqueSalto".
 		Cuando el valor devuelto sea 0, el personaje habrá vuelto al suelo y en la función principal se
 		recalculará la orientación de ambos personajes ya que existe la posibilidad de que hayan cambiado
 		su ubicación relativa en el escenario.
@@ -117,14 +117,14 @@ class Player(sprite.Sprite):
 		self.state = "saltar"
 		self.vulnerable = True
 		self.cdSalto = 1 # Hay que apañar la formula de movimiento en salto
-	def pegarSalto(self):
+	def ataqueSalto(self):
 		"""Durante un salto, si el jugador pulsa alguno de los botones de ataque, el personaje pasará
 		ejecutar un golpe aereo que durara hasta el final del salto, no podrá realizar ninguna otra
 		acción durante el salto, sin embargo podrá modificar la posición horizontalmente desplazandose
 		según la dirección pulsada
 		"""
 
-		self.state = "pegarSalto"
+		self.state = "ataqueSalto"
 		self.vulnerable = True
 		self.golpeando = True
 		self.cdAction = self.cdSalto
@@ -158,6 +158,12 @@ class Player(sprite.Sprite):
 
 		# Actualizamos posición si estamos en un salto
 #		self.cdSalto = ActualizarSaltoYALOHARÉ()
+		self.cdSalto -= 2
+		if self.cdSalto < 0:
+			self.cdSalto = 0
+		self.cdAction -= 2
+		if self.cdAction < 0:
+			self.cdAction = 0
 		return self.cdSalto	
 
 	def load_sprites(self, filename, width, height):
@@ -179,7 +185,7 @@ class Player(sprite.Sprite):
 		ficha["ataqueDebil"] = []
 		ficha["ataqueFuerte"] = []
 		ficha["saltar"] = []
-		ficha["pegarSalto"] = []
+		ficha["ataqueSalto"] = []
 		ficha["ataqueBajo"] = []
 		ficha["recibir"] = []
 		ficha["Morir"] = []
@@ -191,7 +197,7 @@ class Player(sprite.Sprite):
 			ficha["ataqueDebil"].append(sprite_ficha.subsurface((i*200, height*4, width, height)))
 			ficha["ataqueFuerte"].append(sprite_ficha.subsurface((i*200, height*5, width, height)))
 			ficha["saltar"].append(sprite_ficha.subsurface((i*200, height*6, width, height)))
-			ficha["pegarSalto"].append(sprite_ficha.subsurface((i*200, height*7, width, height)))
+			ficha["ataqueSalto"].append(sprite_ficha.subsurface((i*200, height*7, width, height)))
 			ficha["ataqueBajo"].append(sprite_ficha.subsurface((i*200, height*8, width, height)))
 			ficha["recibir"].append(sprite_ficha.subsurface((i*200, height*9, width, height)))
 			ficha["Morir"].append(sprite_ficha.subsurface((i*200, height*10, width, height)))
