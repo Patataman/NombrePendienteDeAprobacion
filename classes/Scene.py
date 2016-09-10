@@ -266,7 +266,7 @@ class SceneFight(Scene):
         self.nomb1_rect.centerx = self.nomb1.get_width() + self.player1.avatar.get_width()
         self.nomb2_rect.centerx = WIDTH - self.nomb2.get_width() - self.player2.avatar.get_width()
         
-        self.countdown = 60 # tiempo de combate
+        self.countdown = 90 # tiempo de combate
         self.time2 = 0
 
         # Barras de vida
@@ -335,7 +335,6 @@ class SceneFight(Scene):
                 self.player2.ataqueBajo()        
 
 
-
             if (keys[K_j]==0 and keys[K_k]==0 and keys[K_d]==0 and keys[K_a]==0
                     and keys[K_s]==0 and self.player1.state != "jump"):
                 self.player1.state = "idle"
@@ -365,6 +364,8 @@ class SceneFight(Scene):
             [self.player2.current_hframe+self.player2.orientacion], \
             (self.player2.sprites[self.player2.state][self.player2.current_hframe+self.player2.orientacion].get_width()/4*3,self.player2.sprites[self.player2.state][self.player2.current_hframe+self.player2.orientacion].get_height()/4*3)), \
             (self.player2.x, self.player2.y))
+        self.cuentaAtras(screen)
+        self.menuPausaFin(screen)
 
     def calcularOrientacion(self):
         if (self.player1.x < self.player2.x): # Están colocados naturalmente
@@ -373,3 +374,15 @@ class SceneFight(Scene):
         else:
             self.player1.orientacion = 4
             self.player2.orientacion = 0
+
+    def cuentaAtras(self, screen):
+        countdownList = ["3","2","1","Luchad!"]
+
+        if self.time2/1000 < 4:
+            countdown, countdown_rect = texto(countdownList[int(self.time2/1000)], WIDTH/2, HEIGHT/2, 75)
+            screen.blit(countdown, countdown_rect)
+        else:
+            return True
+
+    def menuPausaFin(self, screen):
+        pass
