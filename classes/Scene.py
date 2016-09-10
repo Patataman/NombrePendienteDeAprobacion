@@ -248,9 +248,16 @@ class SceneFight(Scene):
         screen = pygame.display.set_mode((WIDTH, HEIGHT))
         pygame.display.set_caption("FightSene")
 
+        self.director = director
+
         #Carga de fondo e imagenes varias
         self.backgroundPause = load_image('assets/images/misc/fondoSemiNegro.png')
         self.backgroundPause_rect = self.backgroundPause.get_rect()
+
+        #Texto del menú de pausa
+        self.pausa, self.pausa_rect = texto('PAUSA', WIDTH/2, HEIGHT/4, 80)
+        self.selectPj, self.selectPj_rect = texto('Volver a seleccion de personaje (F1)', WIDTH/2, HEIGHT/2, 40)
+        self.reanudar, self.reanudar_rect = texto('Reanudar (ESC)', WIDTH/2, HEIGHT/2+100, 40)
 
         # Se inicializan los personajes y avatares
         self.player1 = copy.copy(player1)
@@ -391,6 +398,9 @@ class SceneFight(Scene):
                 # Se selecciona escape para volver al juego
                 if keys[K_ESCAPE]:
                     self.inMenu = 0
+                if keys[K_F1]:
+                    scene = ScenePanel(self.director)
+                    self.director.change_scene(scene)                    
 
 
 
@@ -441,6 +451,9 @@ class SceneFight(Scene):
 
     def menuPausa(self, screen):
         screen.blit(pygame.transform.scale(self.backgroundPause,(WIDTH, HEIGHT)), self.backgroundPause_rect)
+        screen.blit(self.pausa, self.pausa_rect)
+        screen.blit(self.selectPj, self.selectPj_rect)
+        screen.blit(self.reanudar, self.reanudar_rect)
 
     def menuPausaFin(self, screen):
         pass
