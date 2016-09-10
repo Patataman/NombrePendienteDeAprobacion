@@ -1,6 +1,6 @@
 # NombrePendienteDeAprobacion
 
-Proyecto de @guluc3m desarrollado por @patataman y @seind.
+Proyecto de @guluc3m desarrollado por @Patataman y @SeindElBardo.
 
 Este repositorio contiene un juego (muy modesto, todo sea dicho) de lucha en 2D.
 El juego se encuentra totalmente desarrollado en Python, haciendo uso de la librería [Pygame] (http://pygame.org).
