@@ -100,9 +100,9 @@ class ScenePanel(Scene):
         self.prev2.orientacion = 4
         self.prev1.x = 75
         self.prev2.x = 800
-        self.marco1 = load_image("assets/images/misc/select1.png", True)
-        self.marco2 = load_image("assets/images/misc/select2.png", True)
-        self.marcoComun = load_image("assets/images/misc/select12.png", True)
+        self.marco1 = load_image("assets/images/misc/select1.png")
+        self.marco2 = load_image("assets/images/misc/select2.png")
+        self.marcoComun = load_image("assets/images/misc/select12.png")
 
         self.atras, self.atras_rect = texto('Back F1', 100, HEIGHT-100, 40)
         self.sig, self.sig_rect = texto('Figth! F2', WIDTH-100 , HEIGHT-100, 40)
@@ -247,6 +247,11 @@ class SceneFight(Scene):
     def __init__(self, director, player1, player2):
         screen = pygame.display.set_mode((WIDTH, HEIGHT))
         pygame.display.set_caption("FightSene")
+
+        #Carga de fondo e imagenes varias
+        self.backgroundPause = load_image('assets/images/misc/fondoSemiNegro.png')
+        self.backgroundPause_rect = self.backgroundPause.get_rect()
+
         # Se inicializan los personajes y avatares
         self.player1 = copy.copy(player1)
         self.player1.x = 75
@@ -266,81 +271,128 @@ class SceneFight(Scene):
         self.nomb1_rect.centerx = self.nomb1.get_width() + self.player1.avatar.get_width()
         self.nomb2_rect.centerx = WIDTH - self.nomb2.get_width() - self.player2.avatar.get_width()
         
-        self.countdown = 90 # tiempo de combate
+        self.countdown = 93 # tiempo de combate
         self.time2 = 0
 
         # Barras de vida
         self.hudP1 = pygame.Rect(99, 52, 400, 10)
         self.hudP2 = pygame.Rect(522, 52, 400, 10)
 
+        # Variable control para menus y cosas de esas (0 false, 1 true)
+        self.inMenu = 1
+
     def on_update(self, time):
-        self.calcularOrientacion()
-        self.hudP1.width = self.player1.health*4
-        self.hudP2.width = self.player2.health*4
-        self.hudP2.left = 522+(400-self.player2.health*4)
-        self.time2 += time
-        self.player1.update()
-        self.player2.update()
+        if self.inMenu == 0 or self.inMenu == 1:
+            self.calcularOrientacion()
+            self.hudP1.width = self.player1.health*4
+            self.hudP2.width = self.player2.health*4
+            self.hudP2.left = 522+(400-self.player2.health*4)
+            self.time2 += time
+            self.player1.update()
+            self.player2.update()
 
     def on_event(self, time, event):
         keys = pygame.key.get_pressed()
+        #Si se está pausado
         if pygame.KEYDOWN:
-            if keys[K_2]:
-                self.player1.getHurt(5)
-            if keys[K_3]:
-                self.player1.getHurt(12)
-            if keys[K_j]:
-                self.player2.getHurt(5)
-            if keys[K_k]:
-                self.player2.getHurt(12)
+            if self.inMenu != 2 and self.inMenu != 3:
+                # Se selecciona escape para el menú
+                if keys[K_ESCAPE] and self.inMenu == 0:
+                    self.inMenu = 2
 
-            # Controles Player1                
-            if keys[K_d]:
-                if self.player1.orientacion == 0:
-                    self.player1.avanzar()
-                else:
-                    self.player1.defender()
-            if keys[K_a]:
-                if self.player1.orientacion == 4:
-                    self.player1.avanzar()
-                else:
-                    self.player1.defender()           
-            if keys[K_w]:
-                self.player1.saltar()
-            if keys[K_j]:
-                self.player1.ataqueDebil()
-            if keys[K_k]:
-                self.player1.ataqueFuerte()
-            if keys[K_s] and (keys[K_k] or keys[K_j]):
-                self.player1.ataqueBajo()    
+                if keys[K_KP8]:
+                    self.player1.getHurt(5)
+                if keys[K_KP9]:
+                    self.player1.getHurt(12)
+                if keys[K_j]:
+                    self.player2.getHurt(5)
+                if keys[K_k]:
+                    self.player2.getHurt(12)
 
-            # Controles Player2
-            if keys[K_LEFT]:
-                if self.player2.orientacion == 4:
-                    self.player2.avanzar()
-                else:
-                    self.player2.defender()
-            if keys[K_RIGHT]:
-                if self.player2.orientacion == 0:
-                    self.player2.avanzar()
-                else:
-                    self.player2.defender()
-            if keys[K_UP]:
-                self.player2.saltar()
-            if keys[K_KP8]:
-                self.player2.ataqueDebil()
-            if keys[K_KP9]:
-                self.player2.ataqueFuerte()
-            if keys[K_DOWN] and (keys[K_KP8] or keys[K_KP9]):
-                self.player2.ataqueBajo()        
+                # Controles Player1
+                ## Ir derecha
+                if keys[K_d] and (not self.player1.cdAction or self.player1.cdSalto):
+                    if self.player1.orientacion == 0:
+                        self.player1.avanzar(time)
+                    else:
+                        self.player1.defender(time)
+                ## Ir Izquierda
+                if keys[K_a] and (not self.player1.cdAction or self.player1.cdSalto):
+                    if self.player1.orientacion == 4:
+                        self.player1.avanzar(time)
+                    else:
+                        self.player1.defender(time)
+                ## Saltar                
+                if keys[K_w] and (not self.player1.cdAction and not self.player1.cdSalto):
+                    self.player1.saltar()
+
+                if self.inMenu == 0:
+                    ## AtaqueDebil
+                    if keys[K_j] and not self.player1.cdAction:
+                        if self.player1.cdSalto:
+                            self.player1.ataqueSalto()
+                        elif not self.player1.cdSalto and keys[K_s]:
+                            self.player1.ataqueBajo()
+                        else:    
+                            self.player1.ataqueDebil()
+                    ## AtaqueFuerte
+                    if keys[K_k] and not self.player1.cdAction:
+                        if self.player1.cdSalto:
+                            self.player1.ataqueSalto()
+                        elif not self.player1.cdSalto and keys[K_s]:
+                            self.player1.ataqueBajo()
+                        else:
+                            self.player1.ataqueFuerte()
+                            
+
+                # Controles Player2
+                ## Ir derecha
+                if keys[K_RIGHT] and (not self.player2.cdAction or self.player2.cdSalto):
+                    if self.player2.orientacion == 0:
+                        self.player2.avanzar(time)
+                    else:
+                        self.player2.defender(time)
+                ## Ir Izquierda        
+                if keys[K_LEFT] and (not self.player2.cdAction or self.player2.cdSalto):
+                    if self.player2.orientacion == 4:
+                        self.player2.avanzar(time)
+                    else:
+                        self.player2.defender(time)
+                ## Saltar
+                if keys[K_UP] and (not self.player2.cdAction and not self.player2.cdSalto):
+                    self.player2.saltar()
+
+                if self.inMenu == 0:
+                    ## AtaqueDebil
+                    if keys[K_KP8] and not self.player2.cdAction:
+                        if self.player2.cdSalto:
+                            self.player2.ataqueSalto()
+                        elif not self.player2.cdSalto and keys[K_DOWN]:
+                            self.player2.ataqueBajo()
+                        else:    
+                            self.player2.ataqueDebil()
+                    ## AtaqueFuerte    
+                    if keys[K_KP9] and not self.player2.cdAction:
+                        if self.player2.cdSalto:
+                            self.player2.ataqueSalto()
+                        elif not self.player2.cdSalto and keys[K_DOWN]:
+                            self.player2.ataqueBajo()
+                        else:
+                            self.player2.ataqueFuerte()
+                    
+                # Idle
+                if not (keys[K_a] or keys[K_d] or self.player1.cdAction or self.player1.cdSalto):
+                    self.player1.state = "idle"
+                if not (keys[K_LEFT] or keys[K_RIGHT] or self.player2.cdAction or self.player2.cdSalto):
+                    self.player2.state = "idle"
+
+            #Se está en el menú de pausa
+            elif self.inMenu == 2:
+                # Se selecciona escape para volver al juego
+                if keys[K_ESCAPE]:
+                    self.inMenu = 0
 
 
-            if (keys[K_j]==0 and keys[K_k]==0 and keys[K_d]==0 and keys[K_a]==0
-                    and keys[K_s]==0 and self.player1.state != "jump"):
-                self.player1.state = "idle"
-            if (keys[K_LEFT]==0 and keys[K_RIGHT]==0 and keys[K_DOWN]==0 and keys[K_KP8]==0
-                    and keys[K_KP9]==0 and self.player2.state != "jump"):
-                self.player2.state = "idle"
 
     def on_draw(self, screen):
         screen.fill((0,0,0))
@@ -364,8 +416,12 @@ class SceneFight(Scene):
             [self.player2.current_hframe+self.player2.orientacion], \
             (self.player2.sprites[self.player2.state][self.player2.current_hframe+self.player2.orientacion].get_width()/4*3,self.player2.sprites[self.player2.state][self.player2.current_hframe+self.player2.orientacion].get_height()/4*3)), \
             (self.player2.x, self.player2.y))
-        self.cuentaAtras(screen)
-        self.menuPausaFin(screen)
+        if self.inMenu == 1:
+            self.cuentaAtras(screen)
+        if self.inMenu == 2:
+            self.menuPausa(screen)
+        if self.inMenu == 3:
+            self.menuPausaFin(screen)
 
     def calcularOrientacion(self):
         if (self.player1.x < self.player2.x): # Están colocados naturalmente
@@ -377,12 +433,14 @@ class SceneFight(Scene):
 
     def cuentaAtras(self, screen):
         countdownList = ["3","2","1","Luchad!"]
-
         if self.time2/1000 < 4:
             countdown, countdown_rect = texto(countdownList[int(self.time2/1000)], WIDTH/2, HEIGHT/2, 75)
             screen.blit(countdown, countdown_rect)
         else:
-            return True
+            self.inMenu = 0
+
+    def menuPausa(self, screen):
+        screen.blit(pygame.transform.scale(self.backgroundPause,(WIDTH, HEIGHT)), self.backgroundPause_rect)
 
     def menuPausaFin(self, screen):
         pass

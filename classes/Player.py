@@ -18,7 +18,7 @@ class Player(sprite.Sprite):
 		sprite.Sprite.__init__(self)
 		self.name = jsonObject['nombre']
 		self.sprites = self.load_sprites(jsonObject['sprites'], 200, 420)
-		self.avatar = load_image(jsonObject['avatar'], False)
+		self.avatar = load_image(jsonObject['avatar'])
 		self.state = "idle"
 		self.health = 100
 		# Hacia donde mira (0 -> derecha, 4 -> izquierda)
@@ -35,7 +35,7 @@ class Player(sprite.Sprite):
 
 	# Actions
 
-	def avanzar(self):
+	def avanzar(self, time):
 		"""El avance del personaje está definido por su orientación y límitado por su posición o estado.
 		No podrá salirse de los límites del escenario.
 		No podrá avanzar si está ejecutando otra acción que no sea salto.
@@ -45,12 +45,12 @@ class Player(sprite.Sprite):
 		self.vulnerable = True
 		if self.orientacion == 0: # Avanzamos hacia la derecha
 			if self.x <= 850: # No estamos en los límites del escenario
-				self.x += 25
+				self.x += time*0.25
 		else:
 			if self.x >= 25: # No estamos en los límites del escenario
-				self.x -= 25
+				self.x -= time*0.25
 
-	def defender(self):
+	def defender(self, time):
 		"""Durante la defensa el personaje será invulnerable a cualquier ataque y además avanzará hacia atrás.
 		No podrá salirse de los límites del escenario.
 		No podrá avanzar si está ejecutando otra acción que no sea salto.		
@@ -60,10 +60,10 @@ class Player(sprite.Sprite):
 		self.vulnerable = False
 		if self.orientacion == 0: # Avanzamos hacia la derecha
 			if self.x >= 25: # No estamos en los límites del escenario
-				self.x -= 25
+				self.x -= time*0.25
 		else:
 			if self.x <= 850: # No estamos en los límites del escenario
-				self.x += 25
+				self.x += time*0.25
 
 	def defenderSalto(self):
 		"""El personaje podrá saltar hacia atrás manteniendo su defensa.
@@ -96,7 +96,7 @@ class Player(sprite.Sprite):
 		self.golpeando = True
 		self.cdAction = 20
 
-	def saltar(self):
+	def saltar(self, time):
 		"""El personaje podrá saltar, la altura del salto viene determinada por la altura de los personajes,
 		todos los personajes deben poder saltar 1,3 veces su altura, de forma que sea posible superar al
 		otro personaje y caer en el lado opuesto del escenario, obligando a cambiar la orientación de los
@@ -104,7 +104,7 @@ class Player(sprite.Sprite):
 		Mientras se está en el aire las maniobras son reducidas, por lo que durante esta acción la función
 		actualizar devuelve un entero que representa la duración del salto. Mientras este número sea positivo,
 		el personaje estará en el aire, pudiendo sólo realizar las acciones "defenderSalto", "avanzarSalto"
-		y "pegarSalto".
+		y "ataqueSalto".
 		Cuando el valor devuelto sea 0, el personaje habrá vuelto al suelo y en la función principal se
 		recalculará la orientación de ambos personajes ya que existe la posibilidad de que hayan cambiado
 		su ubicación relativa en el escenario.
@@ -112,19 +112,22 @@ class Player(sprite.Sprite):
 		personaje termine el salto.
 		El movimiento vertical descrito utiliza la fórmula del MRUA (Falta definir la altitud del salto y
 		la duración para poder definir la función)
+
+		La variable time se utiliza para el movimiento. Igual que en avanzar y defender
 		"""
 
 		self.state = "saltar"
 		self.vulnerable = True
 		self.cdSalto = 1 # Hay que apañar la formula de movimiento en salto
-	def pegarSalto(self):
+
+	def ataqueSalto(self):
 		"""Durante un salto, si el jugador pulsa alguno de los botones de ataque, el personaje pasará
 		ejecutar un golpe aereo que durara hasta el final del salto, no podrá realizar ninguna otra
 		acción durante el salto, sin embargo podrá modificar la posición horizontalmente desplazandose
 		según la dirección pulsada
 		"""
 
-		self.state = "pegarSalto"
+		self.state = "ataqueSalto"
 		self.vulnerable = True
 		self.golpeando = True
 		self.cdAction = self.cdSalto
@@ -158,6 +161,12 @@ class Player(sprite.Sprite):
 
 		# Actualizamos posición si estamos en un salto
 #		self.cdSalto = ActualizarSaltoYALOHARÉ()
+		self.cdSalto -= 2
+		if self.cdSalto < 0:
+			self.cdSalto = 0
+		self.cdAction -= 2
+		if self.cdAction < 0:
+			self.cdAction = 0
 		return self.cdSalto	
 
 	def load_sprites(self, filename, width, height):
@@ -179,7 +188,7 @@ class Player(sprite.Sprite):
 		ficha["ataqueDebil"] = []
 		ficha["ataqueFuerte"] = []
 		ficha["saltar"] = []
-		ficha["pegarSalto"] = []
+		ficha["ataqueSalto"] = []
 		ficha["ataqueBajo"] = []
 		ficha["recibir"] = []
 		ficha["Morir"] = []
@@ -191,7 +200,7 @@ class Player(sprite.Sprite):
 			ficha["ataqueDebil"].append(sprite_ficha.subsurface((i*200, height*4, width, height)))
 			ficha["ataqueFuerte"].append(sprite_ficha.subsurface((i*200, height*5, width, height)))
 			ficha["saltar"].append(sprite_ficha.subsurface((i*200, height*6, width, height)))
-			ficha["pegarSalto"].append(sprite_ficha.subsurface((i*200, height*7, width, height)))
+			ficha["ataqueSalto"].append(sprite_ficha.subsurface((i*200, height*7, width, height)))
 			ficha["ataqueBajo"].append(sprite_ficha.subsurface((i*200, height*8, width, height)))
 			ficha["recibir"].append(sprite_ficha.subsurface((i*200, height*9, width, height)))
 			ficha["Morir"].append(sprite_ficha.subsurface((i*200, height*10, width, height)))

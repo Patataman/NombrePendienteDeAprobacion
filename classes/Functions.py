@@ -6,7 +6,7 @@ from pygame import image, error, font
 
 # Funciones
 # ---------------------------------------------------------------------
-def load_image(filename, transparent=False):
+def load_image(filename):
 	''' Intenta abrir la imagen dada por la ruta "filename" '''
 	#Intenta cargar la imagen
 	try: 
