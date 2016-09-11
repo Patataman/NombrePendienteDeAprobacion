@@ -33,6 +33,10 @@ class Player(sprite.Sprite):
 		self.cdSalto = 0
 		self.cdAction = 0
 
+		# Atributos necesario para calcular colisiones entre sprites
+		self.image = None 
+		self.rect = None
+
 	def restart(self):
 		#Reiniciar atributos del personaje
 		self.state = "idle"

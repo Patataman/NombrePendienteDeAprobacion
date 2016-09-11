@@ -296,6 +296,16 @@ class SceneFight(Scene):
     def on_update(self, time):
         if self.inMenu == 0 or self.inMenu == 1:
             self.calcularOrientacion()
+
+            ##### Se calculan los atributos necesarios para las colisiones
+            self.player1.image = self.player1.sprites[self.player1.state][self.player1.current_hframe+self.player1.orientacion]
+            self.player1.rect = self.player1.image.get_rect()
+            self.player1.rect.center = (self.player1.x, self.player1.y)
+            self.player2.image = self.player2.sprites[self.player2.state][self.player2.current_hframe+self.player2.orientacion]
+            self.player2.rect = self.player2.image.get_rect()
+            self.player2.rect.center = (self.player2.x, self.player2.y)
+            #####
+            
             self.hudP1.width = self.player1.health*4
             self.hudP2.width = self.player2.health*4
             self.hudP2.left = 522+(400-self.player2.health*4)
@@ -318,13 +328,19 @@ class SceneFight(Scene):
                 ## Ir derecha
                 if keys[K_d] and (not self.player1.cdAction or self.player1.cdSalto):
                     if self.player1.orientacion == 0:
-                        self.player1.avanzar(time)
+                        if not pygame.sprite.collide_mask(self.player1, self.player2):
+                            self.player1.avanzar(time)
+                        else:
+                            self.player1.avanzar(0)
                     else:
                         self.player1.defender(time)
                 ## Ir Izquierda
                 if keys[K_a] and (not self.player1.cdAction or self.player1.cdSalto):
                     if self.player1.orientacion == 4:
-                        self.player1.avanzar(time)
+                        if not pygame.sprite.collide_mask(self.player1, self.player2):
+                            self.player1.avanzar(time)
+                        else:
+                            self.player1.avanzar(0)
                     else:
                         self.player1.defender(time)
                 ## Saltar                
@@ -353,13 +369,19 @@ class SceneFight(Scene):
                 ## Ir derecha
                 if keys[K_RIGHT] and (not self.player2.cdAction or self.player2.cdSalto):
                     if self.player2.orientacion == 0:
-                        self.player2.avanzar(time)
+                        if not pygame.sprite.collide_mask(self.player2, self.player1):
+                            self.player2.avanzar(time)
+                        else:
+                            self.player2.avanzar(0)
                     else:
                         self.player2.defender(time)
                 ## Ir Izquierda        
                 if keys[K_LEFT] and (not self.player2.cdAction or self.player2.cdSalto):
                     if self.player2.orientacion == 4:
-                        self.player2.avanzar(time)
+                        if not pygame.sprite.collide_mask(self.player2, self.player1):
+                            self.player2.avanzar(time)
+                        else:
+                            self.player2.avanzar(0)
                     else:
                         self.player2.defender(time)
                 ## Saltar

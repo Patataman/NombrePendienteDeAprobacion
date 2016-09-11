@@ -13,7 +13,7 @@ class Director:
 	derivados de Scene."""
 
 	def __init__(self):
-		self.screen = pygame.display.set_mode((1024,768))
+		self.screen = pygame.display.set_mode([1024,768])
 		pygame.display.set_caption("NombrePendienteDeAprobacion")
 		self.scene = None
 		self.quit_flag = False
