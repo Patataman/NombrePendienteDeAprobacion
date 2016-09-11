@@ -133,7 +133,7 @@ class ScenePanel(Scene):
                 self.director.change_scene(scene)
             #Se selecciona luchar
             if keys[K_F2]:
-                scene = SceneFight(self.director, self.charac1, self.charac2)
+                scene = SceneFight(self.director, self.prev1, self.prev2)
                 self.director.change_scene(scene)
                 self.background_music.stop()
                 pygame.mixer.Sound("assets/sounds/58773__syna-max__anime-shing.wav").play()
@@ -255,9 +255,14 @@ class SceneFight(Scene):
         self.backgroundPause_rect = self.backgroundPause.get_rect()
 
         #Texto del menú de pausa
-        self.pausa, self.pausa_rect = texto('PAUSA', WIDTH/2, HEIGHT/4, 80)
+        self.pause, self.pause_rect = texto('PAUSA', WIDTH/2, HEIGHT/4, 80)
         self.selectPj, self.selectPj_rect = texto('Volver a seleccion de personaje (F1)', WIDTH/2, HEIGHT/2, 40)
         self.reanudar, self.reanudar_rect = texto('Reanudar (ESC)', WIDTH/2, HEIGHT/2+100, 40)
+
+        #Texto del menú de fin de partida
+        self.end1, self.end1_rect = texto('Gana el jugador 1!', WIDTH/2, HEIGHT/4, 80)
+        self.end2, self.end2_rect = texto('Gana el jugador 2!', WIDTH/2, HEIGHT/4, 80)
+        self.rematch, self.rematch_rect = texto('Revancha (F2)', WIDTH/2, HEIGHT/2+100,40)
 
         # Se inicializan los personajes y avatares
         self.player1 = copy.copy(player1)
@@ -297,6 +302,8 @@ class SceneFight(Scene):
             self.time2 += time
             self.player1.update()
             self.player2.update()
+            if self.player1.health == 0 or self.player2.health == 0:
+                self.inMenu = 3
 
     def on_event(self, time, event):
         keys = pygame.key.get_pressed()
@@ -306,15 +313,6 @@ class SceneFight(Scene):
                 # Se selecciona escape para el menú
                 if keys[K_ESCAPE] and self.inMenu == 0:
                     self.inMenu = 2
-
-                if keys[K_KP8]:
-                    self.player1.getHurt(5)
-                if keys[K_KP9]:
-                    self.player1.getHurt(12)
-                if keys[K_j]:
-                    self.player2.getHurt(5)
-                if keys[K_k]:
-                    self.player2.getHurt(12)
 
                 # Controles Player1
                 ## Ir derecha
@@ -341,7 +339,7 @@ class SceneFight(Scene):
                         elif not self.player1.cdSalto and keys[K_s]:
                             self.player1.ataqueBajo()
                         else:    
-                            self.player1.ataqueDebil()
+                            self.player1.ataqueDebil(self.player2)
                     ## AtaqueFuerte
                     if keys[K_k] and not self.player1.cdAction:
                         if self.player1.cdSalto:
@@ -349,8 +347,7 @@ class SceneFight(Scene):
                         elif not self.player1.cdSalto and keys[K_s]:
                             self.player1.ataqueBajo()
                         else:
-                            self.player1.ataqueFuerte()
-                            
+                            self.player1.ataqueFuerte(self.player2)                            
 
                 # Controles Player2
                 ## Ir derecha
@@ -377,7 +374,7 @@ class SceneFight(Scene):
                         elif not self.player2.cdSalto and keys[K_DOWN]:
                             self.player2.ataqueBajo()
                         else:    
-                            self.player2.ataqueDebil()
+                            self.player2.ataqueDebil(self.player2)
                     ## AtaqueFuerte    
                     if keys[K_KP9] and not self.player2.cdAction:
                         if self.player2.cdSalto:
@@ -385,7 +382,7 @@ class SceneFight(Scene):
                         elif not self.player2.cdSalto and keys[K_DOWN]:
                             self.player2.ataqueBajo()
                         else:
-                            self.player2.ataqueFuerte()
+                            self.player2.ataqueFuerte(self.player2)
                     
                 # Idle
                 if not (keys[K_a] or keys[K_d] or self.player1.cdAction or self.player1.cdSalto):
@@ -400,9 +397,19 @@ class SceneFight(Scene):
                     self.inMenu = 0
                 if keys[K_F1]:
                     scene = ScenePanel(self.director)
-                    self.director.change_scene(scene)                    
-
-
+                    self.director.change_scene(scene)
+            #Se acaba el combate
+            elif self.inMenu == 3:
+                #Se selecciona volver a selección pjs
+                if keys[K_F1]:
+                    scene = ScenePanel(self.director)
+                    self.director.change_scene(scene)
+                #Se selecciona revancha
+                if keys[K_F2]:
+                    self.player1.restart()
+                    self.player2.restart()
+                    scene = SceneFight(self.director, self.player1, self.player2)
+                    self.director.change_scene(scene)
 
     def on_draw(self, screen):
         screen.fill((0,0,0))
@@ -451,9 +458,15 @@ class SceneFight(Scene):
 
     def menuPausa(self, screen):
         screen.blit(pygame.transform.scale(self.backgroundPause,(WIDTH, HEIGHT)), self.backgroundPause_rect)
-        screen.blit(self.pausa, self.pausa_rect)
+        screen.blit(self.pause, self.pause_rect)
         screen.blit(self.selectPj, self.selectPj_rect)
         screen.blit(self.reanudar, self.reanudar_rect)
 
     def menuPausaFin(self, screen):
-        pass
+        screen.blit(pygame.transform.scale(self.backgroundPause,(WIDTH, HEIGHT)), self.backgroundPause_rect)
+        if self.player1.health == 0:
+            screen.blit(self.end2, self.end2_rect)
+        if self.player2.health == 0:
+            screen.blit(self.end1, self.end1_rect)
+        screen.blit(self.selectPj, self.selectPj_rect)
+        screen.blit(self.rematch, self.rematch_rect)

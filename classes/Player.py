@@ -33,6 +33,20 @@ class Player(sprite.Sprite):
 		self.cdSalto = 0
 		self.cdAction = 0
 
+	def restart(self):
+		#Reiniciar atributos del personaje
+		self.state = "idle"
+		self.health = 100
+		self.current_hframe = 0
+		self.orientacion = 0
+		self.x = 75
+		self.y = 250
+		self.vulnerable = True
+		self.golpeando = False
+		self.cdSalto = 0
+		self.cdAction = 0
+
+
 	# Actions
 
 	def avanzar(self, time):
@@ -75,7 +89,7 @@ class Player(sprite.Sprite):
 		self.vulnerable = False
 
 
-	def ataqueDebil(self):
+	def ataqueDebil(self, playerObjective):
 		"""El ataque débil se caracteriza por ser más flojo pero más rápido. Esto en nuestro juego se traduce
 		en que el daño será menor pero la cd del golpe también.
 		Durante el ataque no se podrá efectuar ninguna acción.
@@ -85,8 +99,9 @@ class Player(sprite.Sprite):
 		self.vulnerable = True
 		self.golpeando = True
 		self.cdAction = 10
+		playerObjective.getHurt(5)
 
-	def ataqueFuerte(self):
+	def ataqueFuerte(self, playerObjective):
 		"""El ataque fuerte se caracteriza por inflingir mayor daño pero requerir más tiempo de ejecución.
 		Durante el ataque no se podrá efectuar ninguna acción.
 		"""
@@ -95,6 +110,7 @@ class Player(sprite.Sprite):
 		self.vulnerable = True
 		self.golpeando = True
 		self.cdAction = 20
+		playerObjective.getHurt(12)
 
 	def saltar(self, time):
 		"""El personaje podrá saltar, la altura del salto viene determinada por la altura de los personajes,
