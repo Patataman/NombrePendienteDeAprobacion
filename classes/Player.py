@@ -32,7 +32,7 @@ class Player(sprite.Sprite):
 		# para mantener el flujo correctamente y evitar solapamiento.
 		self.cdSalto = 0
 		self.cdAction = 0
-
+		self.ataque = 0
 		# Atributos necesario para calcular colisiones entre sprites
 		self.image = None 
 		self.rect = None
@@ -49,6 +49,9 @@ class Player(sprite.Sprite):
 		self.golpeando = False
 		self.cdSalto = 0
 		self.cdAction = 0
+		self.ataque = 0
+		self.image = None 
+		self.rect = None
 
 
 	# Actions
@@ -59,7 +62,8 @@ class Player(sprite.Sprite):
 		No podrá avanzar si está ejecutando otra acción que no sea salto.
 		"""
 
-		self.state = "avanzar"
+		if self.state != 'saltar':
+			self.state = "avanzar"
 		self.vulnerable = True
 		if self.orientacion == 0: # Avanzamos hacia la derecha
 			if self.x <= 850: # No estamos en los límites del escenario
@@ -74,14 +78,15 @@ class Player(sprite.Sprite):
 		No podrá avanzar si está ejecutando otra acción que no sea salto.		
 		"""
 		
-		self.state = "defender"
-		self.vulnerable = False
-		if self.orientacion == 0: # Avanzamos hacia la derecha
-			if self.x >= 25: # No estamos en los límites del escenario
-				self.x -= time*0.25
-		else:
-			if self.x <= 850: # No estamos en los límites del escenario
-				self.x += time*0.25
+		if self.state != 'saltar':
+			self.state = "defender"
+			self.vulnerable = False
+			if self.orientacion == 0: # Avanzamos hacia la derecha
+				if self.x >= 25: # No estamos en los límites del escenario
+					self.x -= time*0.25
+			else:
+				if self.x <= 850: # No estamos en los límites del escenario
+					self.x += time*0.25
 
 	def defenderSalto(self):
 		"""El personaje podrá saltar hacia atrás manteniendo su defensa.
@@ -91,6 +96,12 @@ class Player(sprite.Sprite):
 		"""
 		self.state = "defenderSalto"
 		self.vulnerable = False
+		if self.orientacion == 0: # Avanzamos hacia la derecha
+			if self.x >= 25: # No estamos en los límites del escenario
+				self.x -= time*0.25
+		else:
+			if self.x <= 850: # No estamos en los límites del escenario
+				self.x += time*0.25
 
 
 	def ataqueDebil(self, playerObjective):
@@ -102,7 +113,13 @@ class Player(sprite.Sprite):
 		self.state = "ataqueDebil"
 		self.vulnerable = True
 		self.golpeando = True
-		self.cdAction = 10
+		if self.ataque != 2:
+			self.ataque += 1
+			self.cdAction = 5
+		else:
+			self.ataque = 0
+			self.cdAction = 10
+
 		playerObjective.getHurt(5)
 
 	def ataqueFuerte(self, playerObjective):
@@ -116,7 +133,7 @@ class Player(sprite.Sprite):
 		self.cdAction = 20
 		playerObjective.getHurt(12)
 
-	def saltar(self, time):
+	def saltar(self):
 		"""El personaje podrá saltar, la altura del salto viene determinada por la altura de los personajes,
 		todos los personajes deben poder saltar 1,3 veces su altura, de forma que sea posible superar al
 		otro personaje y caer en el lado opuesto del escenario, obligando a cambiar la orientación de los
@@ -134,11 +151,14 @@ class Player(sprite.Sprite):
 		la duración para poder definir la función)
 
 		La variable time se utiliza para el movimiento. Igual que en avanzar y defender
+
+		e = 1/2 * a * t² + Vo * t + Eo		
 		"""
 
 		self.state = "saltar"
 		self.vulnerable = True
-		self.cdSalto = 1 # Hay que apañar la formula de movimiento en salto
+		self.cdSalto = 120 # Hay que apañar la formula de movimiento en salto
+
 
 	def ataqueSalto(self):
 		"""Durante un salto, si el jugador pulsa alguno de los botones de ataque, el personaje pasará
@@ -158,7 +178,7 @@ class Player(sprite.Sprite):
 		self.state = "ataqueBajo"
 		self.vulnerable = True
 		self.golpeando = True
-		self.cdAction = 10
+		self.cdAction = 5
 
 	def getHurt(self, dmg):
 		"""Cuando un personaje recibe daño, este se resta de sus puntos de vida actuales. En caso de estos
@@ -181,7 +201,12 @@ class Player(sprite.Sprite):
 
 		# Actualizamos posición si estamos en un salto
 #		self.cdSalto = ActualizarSaltoYALOHARÉ()
-		self.cdSalto -= 2
+		if self.state == 'saltar':
+			self.cdSalto -= 20
+			if self.cdSalto > 60:
+				self.y += 1/2 * 1 * 1 + 0 * 1 + 0
+			else:
+				self.y += 1/2 * -1 * 1 + 0 * 1 + 0
 		if self.cdSalto < 0:
 			self.cdSalto = 0
 		self.cdAction -= 2
