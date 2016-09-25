@@ -312,126 +312,152 @@ class SceneFight(Scene):
             self.time2 += time
             self.player1.update()
             self.player2.update()
+            # Idle
+            keys = pygame.key.get_pressed()
+            if not (keys[K_a] or keys[K_d] or self.player1.cdAction or self.player1.cdSalto):
+                self.player1.state = "idle"
+            if not (keys[K_LEFT] or keys[K_RIGHT] or self.player2.cdAction or self.player2.cdSalto):
+                self.player2.state = "idle"
+
             if self.player1.health == 0 or self.player2.health == 0:
                 self.inMenu = 3
 
+
     def on_event(self, time, event):
         keys = pygame.key.get_pressed()
+        #if pygame.KEYDOWN:
         #Si se está pausado
-        if pygame.KEYDOWN:
-            if self.inMenu != 2 and self.inMenu != 3:
-                # Se selecciona escape para el menú
-                if keys[K_ESCAPE] and self.inMenu == 0:
-                    self.inMenu = 2
+        if self.inMenu != 2 and self.inMenu != 3:
+            # Se selecciona escape para el menú
+            if keys[K_ESCAPE] and self.inMenu == 0:
+                self.inMenu = 2
 
-                # Controles Player1
-                ## Ir derecha
-                if keys[K_d] and (not self.player1.cdAction or self.player1.cdSalto):
-                    if self.player1.orientacion == 0:
-                        if not pygame.sprite.collide_mask(self.player1, self.player2):
-                            self.player1.avanzar(time)
-                        else:
-                            self.player1.avanzar(0)
+            # Controles Player1
+            ## Ir derecha
+            if keys[K_d] and (not self.player1.cdAction):
+                if self.player1.orientacion == 0:
+                    if not pygame.sprite.collide_mask(self.player1, self.player2):
+                        self.player1.avanzar(time)
                     else:
-                        self.player1.defender(time)
-                ## Ir Izquierda
-                if keys[K_a] and (not self.player1.cdAction or self.player1.cdSalto):
-                    if self.player1.orientacion == 4:
-                        if not pygame.sprite.collide_mask(self.player1, self.player2):
-                            self.player1.avanzar(time)
-                        else:
-                            self.player1.avanzar(0)
+                        self.player1.avanzar(0)
+                else:
+                    self.player1.defender(time)
+            ## Ir Izquierda
+            if keys[K_a] and (not self.player1.cdAction):
+                if self.player1.orientacion == 4:
+                    if not pygame.sprite.collide_mask(self.player1, self.player2):
+                        self.player1.avanzar(time)
                     else:
-                        self.player1.defender(time)
-                ## Saltar                
-                if keys[K_w] and (not self.player1.cdAction and not self.player1.cdSalto):
-                    self.player1.saltar()
+                        self.player1.avanzar(0)
+                else:
+                    self.player1.defender(time)
+            ## Saltar                
+            if keys[K_w] and (not self.player1.cdAction and not self.player1.cdSalto):
+                self.player1.saltar()
 
-                if self.inMenu == 0:
-                    ## AtaqueDebil
-                    if keys[K_j] and not self.player1.cdAction:
-                        if self.player1.cdSalto:
-                            self.player1.ataqueSalto()
-                        elif not self.player1.cdSalto and keys[K_s]:
-                            self.player1.ataqueBajo()
-                        else:    
-                            self.player1.ataqueDebil(self.player2)
-                    ## AtaqueFuerte
-                    if keys[K_k] and not self.player1.cdAction:
-                        if self.player1.cdSalto:
-                            self.player1.ataqueSalto()
-                        elif not self.player1.cdSalto and keys[K_s]:
-                            self.player1.ataqueBajo()
-                        else:
-                            self.player1.ataqueFuerte(self.player2)                            
+            if keys[K_w] and keys[K_d]:
+                if self.player1.orientacion == 0:
+                    self.player1.avanzar(time)
+                else:
+                    self.player1.defender(time)
 
-                # Controles Player2
-                ## Ir derecha
-                if keys[K_RIGHT] and (not self.player2.cdAction or self.player2.cdSalto):
-                    if self.player2.orientacion == 0:
-                        if not pygame.sprite.collide_mask(self.player2, self.player1):
-                            self.player2.avanzar(time)
-                        else:
-                            self.player2.avanzar(0)
+            if keys[K_w] and keys[K_a]:
+                if self.player1.orientacion == 4:
+                    self.player1.avanzar(time)
+                else:
+                    self.player1.defender(time)
+
+            if self.inMenu == 0:
+                ## AtaqueDebil
+                if keys[K_j] and not self.player1.cdAction:
+                    if self.player1.cdSalto:
+                        self.player1.ataqueSalto()
+                    elif not self.player1.cdSalto and keys[K_s]:
+                        self.player1.ataqueBajo()
+                    else:    
+                        self.player1.ataqueDebil(self.player2)
+                ## AtaqueFuerte
+                if keys[K_k] and not self.player1.cdAction:
+                    if self.player1.cdSalto:
+                        self.player1.ataqueSalto()
+                    elif not self.player1.cdSalto and keys[K_s]:
+                        self.player1.ataqueBajo()
                     else:
-                        self.player2.defender(time)
-                ## Ir Izquierda        
-                if keys[K_LEFT] and (not self.player2.cdAction or self.player2.cdSalto):
-                    if self.player2.orientacion == 4:
-                        if not pygame.sprite.collide_mask(self.player2, self.player1):
-                            self.player2.avanzar(time)
-                        else:
-                            self.player2.avanzar(0)
+                        self.player1.ataqueFuerte(self.player2)                            
+
+            # Controles Player2
+            ## Ir derecha
+            if keys[K_RIGHT] and (not self.player2.cdAction):
+                if self.player2.orientacion == 0:
+                    if not pygame.sprite.collide_mask(self.player2, self.player1):
+                        self.player2.avanzar(time)
                     else:
-                        self.player2.defender(time)
-                ## Saltar
-                if keys[K_UP] and (not self.player2.cdAction and not self.player2.cdSalto):
-                    self.player2.saltar()
+                        self.player2.avanzar(0)
+                else:
+                    self.player2.defender(time)
+            ## Ir Izquierda        
+            if keys[K_LEFT] and (not self.player2.cdAction):
+                if self.player2.orientacion == 4:
+                    if not pygame.sprite.collide_mask(self.player2, self.player1):
+                        self.player2.avanzar(time)
+                    else:
+                        self.player2.avanzar(0)
+                else:
+                    self.player2.defender(time)
+            ## Saltar
+            if keys[K_UP] and (not self.player2.cdAction and not self.player2.cdSalto):
+                self.player2.saltar()
 
-                if self.inMenu == 0:
-                    ## AtaqueDebil
-                    if keys[K_KP8] and not self.player2.cdAction:
-                        if self.player2.cdSalto:
-                            self.player2.ataqueSalto()
-                        elif not self.player2.cdSalto and keys[K_DOWN]:
-                            self.player2.ataqueBajo()
-                        else:    
-                            self.player2.ataqueDebil(self.player2)
-                    ## AtaqueFuerte    
-                    if keys[K_KP9] and not self.player2.cdAction:
-                        if self.player2.cdSalto:
-                            self.player2.ataqueSalto()
-                        elif not self.player2.cdSalto and keys[K_DOWN]:
-                            self.player2.ataqueBajo()
-                        else:
-                            self.player2.ataqueFuerte(self.player2)
-                    
-                # Idle
-                if not (keys[K_a] or keys[K_d] or self.player1.cdAction or self.player1.cdSalto):
-                    self.player1.state = "idle"
-                if not (keys[K_LEFT] or keys[K_RIGHT] or self.player2.cdAction or self.player2.cdSalto):
-                    self.player2.state = "idle"
+            if keys[K_LEFT] and keys[K_UP]:
+                if self.player2.orientacion == 4:
+                    self.player2.avanzar(time)
+                else:
+                    self.player2.defender(time)
 
-            #Se está en el menú de pausa
-            elif self.inMenu == 2:
-                # Se selecciona escape para volver al juego
-                if keys[K_ESCAPE]:
-                    self.inMenu = 0
-                if keys[K_F1]:
-                    scene = ScenePanel(self.director)
-                    self.director.change_scene(scene)
-            #Se acaba el combate
-            elif self.inMenu == 3:
-                #Se selecciona volver a selección pjs
-                if keys[K_F1]:
-                    scene = ScenePanel(self.director)
-                    self.director.change_scene(scene)
-                #Se selecciona revancha
-                if keys[K_F2]:
-                    self.player1.restart()
-                    self.player2.restart()
-                    scene = SceneFight(self.director, self.player1, self.player2)
-                    self.director.change_scene(scene)
+            if keys[K_RIGHT] and keys[K_UP]:
+                if self.player2.orientacion == 0:
+                    self.player2.avanzar(time)
+                else:
+                    self.player2.defender(time)
+
+            if self.inMenu == 0:
+                ## AtaqueDebil
+                if keys[K_KP8] and not self.player2.cdAction:
+                    if self.player2.cdSalto:
+                        self.player2.ataqueSalto()
+                    elif not self.player2.cdSalto and keys[K_DOWN]:
+                        self.player2.ataqueBajo()
+                    else:    
+                        self.player2.ataqueDebil(self.player2)
+                ## AtaqueFuerte    
+                if keys[K_KP9] and not self.player2.cdAction:
+                    if self.player2.cdSalto:
+                        self.player2.ataqueSalto()
+                    elif not self.player2.cdSalto and keys[K_DOWN]:
+                        self.player2.ataqueBajo()
+                    else:
+                        self.player2.ataqueFuerte(self.player2)        
+
+        #Se está en el menú de pausa
+        elif self.inMenu == 2:
+            # Se selecciona escape para volver al juego
+            if keys[K_ESCAPE]:
+                self.inMenu = 0
+            if keys[K_F1]:
+                scene = ScenePanel(self.director)
+                self.director.change_scene(scene)
+        #Se acaba el combate
+        elif self.inMenu == 3:
+            #Se selecciona volver a selección pjs
+            if keys[K_F1]:
+                scene = ScenePanel(self.director)
+                self.director.change_scene(scene)
+            #Se selecciona revancha
+            if keys[K_F2]:
+                self.player1.restart()
+                self.player2.restart()
+                scene = SceneFight(self.director, self.player1, self.player2)
+                self.director.change_scene(scene)
 
     def on_draw(self, screen):
         screen.fill((0,0,0))

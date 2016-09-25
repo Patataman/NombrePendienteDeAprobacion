@@ -61,16 +61,19 @@ class Player(sprite.Sprite):
 		No podrá salirse de los límites del escenario.
 		No podrá avanzar si está ejecutando otra acción que no sea salto.
 		"""
-
+		espacio = 0.25
+		#Cuando se salta, el desplazamiento es mayor
+		if self.state == "saltar":
+			espacio = 0.5
 		if self.state != 'saltar':
 			self.state = "avanzar"
 		self.vulnerable = True
 		if self.orientacion == 0: # Avanzamos hacia la derecha
 			if self.x <= 850: # No estamos en los límites del escenario
-				self.x += time*0.25
+				self.x += time*espacio
 		else:
 			if self.x >= 25: # No estamos en los límites del escenario
-				self.x -= time*0.25
+				self.x -= time*espacio
 
 	def defender(self, time):
 		"""Durante la defensa el personaje será invulnerable a cualquier ataque y además avanzará hacia atrás.
@@ -78,15 +81,19 @@ class Player(sprite.Sprite):
 		No podrá avanzar si está ejecutando otra acción que no sea salto.		
 		"""
 		
+		espacio = 0.25
+		#Cuando se salta, el desplazamiento es mayor
+		if self.state == "saltar":
+			espacio = 0.5
 		if self.state != 'saltar':
 			self.state = "defender"
-			self.vulnerable = False
-			if self.orientacion == 0: # Avanzamos hacia la derecha
-				if self.x >= 25: # No estamos en los límites del escenario
-					self.x -= time*0.25
-			else:
-				if self.x <= 850: # No estamos en los límites del escenario
-					self.x += time*0.25
+		self.vulnerable = False
+		if self.orientacion == 0: # Avanzamos hacia la derecha
+			if self.x >= 25: # No estamos en los límites del escenario
+				self.x -= time*espacio
+		else:
+			if self.x <= 850: # No estamos en los límites del escenario
+				self.x += time*espacio
 
 	def defenderSalto(self):
 		"""El personaje podrá saltar hacia atrás manteniendo su defensa.
@@ -201,12 +208,14 @@ class Player(sprite.Sprite):
 
 		# Actualizamos posición si estamos en un salto
 #		self.cdSalto = ActualizarSaltoYALOHARÉ()
-		if self.state == 'saltar':
-			self.cdSalto -= 20
+		if self.state == "saltar" and self.cdSalto > 0:
 			if self.cdSalto > 60:
-				self.y += 1/2 * 1 * 1 + 0 * 1 + 0
+				self.y -= 1/2 * 1 * 1 + 0 * 1 + 100
 			else:
-				self.y += 1/2 * -1 * 1 + 0 * 1 + 0
+				self.y += 1/2 * 1 * 1 + 0 * 1 + 100
+			self.cdSalto -= 20
+			if self.cdSalto <= 0:
+				self.state = "idle"
 		if self.cdSalto < 0:
 			self.cdSalto = 0
 		self.cdAction -= 2
