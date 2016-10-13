@@ -434,7 +434,7 @@ class SceneFight(Scene):
                     elif not self.player2.cdSalto and keys[K_DOWN]:
                         self.player2.ataqueBajo()
                     else:    
-                        self.player2.ataqueDebil(self.player1)
+                        self.player2.ataqueDebil(self.player2)
                 ## AtaqueFuerte    
                 if keys[K_KP9] and not self.player2.cdAction:
                     if self.player2.cdSalto:
@@ -443,7 +443,7 @@ class SceneFight(Scene):
                     elif not self.player2.cdSalto and keys[K_DOWN]:
                         self.player2.ataqueBajo()
                     else:
-                        self.player2.ataqueFuerte(self.player1)
+                        self.player2.ataqueFuerte(self.player2)        
 
         #Se está en el menú de pausa
         elif self.inMenu == 2:

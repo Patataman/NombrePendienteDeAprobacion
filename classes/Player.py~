@@ -139,7 +139,7 @@ class Player(sprite.Sprite):
 		self.golpeando = True
 		self.cdAction = 20
                 if sprite.collide_mask(self, playerObjective):
-			playerObjective.getHurt(12)
+		playerObjective.getHurt(12)
 
 	def saltar(self):
 		"""El personaje podrá saltar, la altura del salto viene determinada por la altura de los personajes,

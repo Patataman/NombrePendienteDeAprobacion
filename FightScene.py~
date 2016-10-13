@@ -21,7 +21,7 @@ HEIGHT = 768
 def main():
     screen = pygame.display.set_mode((WIDTH, HEIGHT))
     pygame.display.set_caption("FightSene")
-    background_image, background_image_rect = load_image('assets/images/misc/fondo.jpg')
+    background_image, background_image_rect = load_image('assets/images/misc/fondo.jpgs')
  	# Se inicializan los personajes y avatares
     player1 = Player("pepi")
     player2 = Player("pepo")
