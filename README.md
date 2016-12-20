@@ -2,16 +2,29 @@
 
 Proyecto de @guluc3m desarrollado por @Patataman y @SeindElBardo.
 
-Este repositorio contiene un juego (muy modesto, todo sea dicho) de lucha en 2D.
+Este repositorio contiene un juego (muy modesto, todo sea dicho) de lucha en 2D para dos jugadores.
 El juego se encuentra totalmente desarrollado en Python, haciendo uso de la librería [Pygame] (http://pygame.org).
 
+El juego se compone de 3 pantallas:
+- Inicio
+- Selección de personajes:
+- Juego
+
+# Controles
+Los controles para cada jugador son:
+- Moverse hacia la izquierda: A para el jugador 1, Flecha izquierda para el jugador 2.
+- Moverse hacia la derecha: D para el jugador 1, Flecha derecha para el jugador 2.
+- Moverse hacia abajo: S para el jugador 1, Flecha abajo para el jugador 2.
+- Salta: W para el jugador 1, Flecha arriba para el jugador 2.
+- Selección de personaje: Barra espaciadora para el jugador 1 y Enter para el jugador 2-
+
 El juego se compone de las siguientes carpetas
-- Raiz 
+- Raiz
  - Assets
  - Classes
 
 # Raiz
-  Archivo *main.py* que es el que hay que ejecutar para abrir el juego.
+  Archivo *main.py* es el que hay que ejecutar para abrir el juego.
 # Assets
   Contiene archivos tales como imágenes, sonidos, sprites de personajes...
 # Classes
