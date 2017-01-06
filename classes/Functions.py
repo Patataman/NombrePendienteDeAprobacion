@@ -7,17 +7,16 @@ from pygame import image, error, font
 # Funciones
 # ---------------------------------------------------------------------
 def load_image(filename):
-	''' Intenta abrir la imagen dada por la ruta "filename" '''
-	#Intenta cargar la imagen
-	try: 
-		imageFile = image.load(filename)
-	#Si falla, sale el error
-	except error, message:
-		raise SystemExit, message
-	return imageFile
+    ''' Intenta abrir la imagen dada por la ruta "filename" '''
+    #Intenta cargar la imagen
+    try: 
+        imageFile = image.load(filename)
+    #Si falla, sale el error
+    except error as message:
+        raise sys.exc_info()
+    return imageFile
 
 ''' Escribir texto '''
-
 def texto(texto, posx, posy, size=25, color=(255, 255, 255)):
     fuente = font.Font("assets/fonts/Lato-Regular.ttf", size)
     salida = fuente.render(texto, 1, color)

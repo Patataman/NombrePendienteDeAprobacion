@@ -1,8 +1,8 @@
 # -*- coding: utf-8 -*-
 
-from Director import Director
-from Functions import *
-from Player import *
+from .Director import Director
+from .Functions import *
+from .Player import *
 import pygame, sys, math, copy, time
 from pygame.locals import *
 #import Personajes
@@ -203,11 +203,11 @@ class ScenePanel(Scene):
 
         screen.blit(pygame.transform.scale(self.prev1.sprites[self.prev1.state] \
                                         [self.prev1.current_hframe+self.prev1.orientacion], \
-                                        (self.prev1.sprites[self.prev1.state][self.prev1.current_hframe+self.prev1.orientacion].get_width()/4*3,self.prev1.sprites[self.prev1.state][self.prev1.current_hframe+self.prev1.orientacion].get_height()/4*3)), \
+                                        (int(self.prev1.sprites[self.prev1.state][self.prev1.current_hframe+self.prev1.orientacion].get_width()/4*3),int(self.prev1.sprites[self.prev1.state][self.prev1.current_hframe+self.prev1.orientacion].get_height()/4*3))), \
                                         (self.prev1.x, self.prev1.y))
         screen.blit(pygame.transform.scale(self.prev2.sprites[self.prev2.state] \
                                         [self.prev2.current_hframe+self.prev2.orientacion], \
-                                        (self.prev2.sprites[self.prev2.state][self.prev2.current_hframe+self.prev2.orientacion].get_width()/4*3,self.prev2.sprites[self.prev2.state][self.prev2.current_hframe+self.prev2.orientacion].get_height()/4*3)), \
+                                        (int(self.prev2.sprites[self.prev2.state][self.prev2.current_hframe+self.prev2.orientacion].get_width()/4*3),int(self.prev2.sprites[self.prev2.state][self.prev2.current_hframe+self.prev2.orientacion].get_height()/4*3))), \
                                         (self.prev2.x, self.prev2.y))
 
     def dibujarPanel(self,screen):
@@ -374,7 +374,7 @@ class SceneFight(Scene):
                 ## AtaqueDebil
                 if keys[K_j] and not self.player1.cdAction:
                     if self.player1.cdSalto:
-			a=1
+                        a=1
                         #self.player1.ataqueSalto()
                     elif not self.player1.cdSalto and keys[K_s]:
                         self.player1.ataqueBajo()
@@ -383,7 +383,7 @@ class SceneFight(Scene):
                 ## AtaqueFuerte
                 if keys[K_k] and not self.player1.cdAction:
                     if self.player1.cdSalto:
-			a=1
+                        a=1
                         #self.player1.ataqueSalto()
                     elif not self.player1.cdSalto and keys[K_s]:
                         self.player1.ataqueBajo()
@@ -429,7 +429,7 @@ class SceneFight(Scene):
                 ## AtaqueDebil
                 if keys[K_KP8] and not self.player2.cdAction:
                     if self.player2.cdSalto:
-			a=1
+                        a=1
                         #self.player2.ataqueSalto()
                     elif not self.player2.cdSalto and keys[K_DOWN]:
                         self.player2.ataqueBajo()
@@ -438,7 +438,7 @@ class SceneFight(Scene):
                 ## AtaqueFuerte    
                 if keys[K_KP9] and not self.player2.cdAction:
                     if self.player2.cdSalto:
-			a=1
+                        a=1
                         #self.player2.ataqueSalto()
                     elif not self.player2.cdSalto and keys[K_DOWN]:
                         self.player2.ataqueBajo()
@@ -468,7 +468,7 @@ class SceneFight(Scene):
 
     def on_draw(self, screen):
         screen.fill((0,0,0))
-	screen.blit(self.background, self.background_rect)
+        screen.blit(self.background, self.background_rect)
         timeCD, time_rect = texto(str(self.countdown - int(math.floor(self.time2/1000))), 512, 38)
 
         screen.blit(timeCD, time_rect)
@@ -483,11 +483,11 @@ class SceneFight(Scene):
         #screen.blit(pygame.transform.flip(self.player2.sprites[self.player2.state][self.player2.current_hframe], True, False), (600, 200))
         screen.blit(pygame.transform.scale(self.player1.sprites[self.player1.state] \
             [self.player1.current_hframe+self.player1.orientacion], \
-            (self.player1.sprites[self.player1.state][self.player1.current_hframe+self.player1.orientacion].get_width()/4*3,self.player1.sprites[self.player1.state][self.player1.current_hframe+self.player1.orientacion].get_height()/4*3)), \
+            (int(self.player1.sprites[self.player1.state][self.player1.current_hframe+self.player1.orientacion].get_width()/4*3),int(self.player1.sprites[self.player1.state][self.player1.current_hframe+self.player1.orientacion].get_height()/4*3))), \
             (self.player1.x, self.player1.y))
         screen.blit(pygame.transform.scale(self.player2.sprites[self.player2.state] \
             [self.player2.current_hframe+self.player2.orientacion], \
-            (self.player2.sprites[self.player2.state][self.player2.current_hframe+self.player2.orientacion].get_width()/4*3,self.player2.sprites[self.player2.state][self.player2.current_hframe+self.player2.orientacion].get_height()/4*3)), \
+            (int(self.player2.sprites[self.player2.state][self.player2.current_hframe+self.player2.orientacion].get_width()/4*3),int(self.player2.sprites[self.player2.state][self.player2.current_hframe+self.player2.orientacion].get_height()/4*3))), \
             (self.player2.x, self.player2.y))
         if self.inMenu == 1:
             self.cuentaAtras(screen)
