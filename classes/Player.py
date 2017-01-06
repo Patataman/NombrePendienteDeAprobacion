@@ -201,6 +201,12 @@ class Player(sprite.Sprite):
             return 1    # El personaje sigue vivo
 
     def update(self):
+        ##### Se calculan los atributos necesarios para las colisiones
+        self.image = self.sprites[self.state][self.current_hframe+self.orientacion]
+        self.rect = self.image.get_rect()
+        self.rect.center = (self.x, self.y)
+        #####
+
         # Actualizamos frames
         self.current_hframe += 1
         if self.current_hframe == 4:
@@ -213,8 +219,8 @@ class Player(sprite.Sprite):
             else:
                 self.y += 1/2 * 1 * 1 + 0 * 1 + 100
             self.cdSalto -= 20
-            #if self.cdSalto <= 0:
-            #    self.state = "idle"
+            if self.cdSalto <= 0:
+                self.state = "idle"
         if self.cdSalto < 0:
             self.cdSalto = 0
         self.cdAction -= 2

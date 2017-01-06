@@ -299,15 +299,6 @@ class SceneFight(Scene):
     def on_update(self, time):
         if self.inMenu == 0 or self.inMenu == 1:
             self.calcularOrientacion()
-
-            ##### Se calculan los atributos necesarios para las colisiones
-            self.player1.image = self.player1.sprites[self.player1.state][self.player1.current_hframe+self.player1.orientacion]
-            self.player1.rect = self.player1.image.get_rect()
-            self.player1.rect.center = (self.player1.x, self.player1.y)
-            self.player2.image = self.player2.sprites[self.player2.state][self.player2.current_hframe+self.player2.orientacion]
-            self.player2.rect = self.player2.image.get_rect()
-            self.player2.rect.center = (self.player2.x, self.player2.y)
-            #####
             
             self.hudP1.width = self.player1.health*4
             self.hudP2.width = self.player2.health*4
@@ -321,10 +312,8 @@ class SceneFight(Scene):
                 self.player1.state = "idle"
             if not (keys[K_LEFT] or keys[K_RIGHT] or self.player2.cdAction or self.player2.cdSalto):
                 self.player2.state = "idle"
-
-            if self.player1.health == 0 or self.player2.health == 0:
+            if self.player1.health == 0 or self.player2.health == 0 or int(math.floor(self.time2/1000)) == self.countdown:
                 self.inMenu = 3
-
 
     def on_event(self, time, event):
         keys = pygame.key.get_pressed()
@@ -471,6 +460,7 @@ class SceneFight(Scene):
         screen.blit(self.background, self.background_rect)
         timeCD, time_rect = texto(str(self.countdown - int(math.floor(self.time2/1000))), 512, 38)
 
+        #Actualización del tiempo y barras de vida
         screen.blit(timeCD, time_rect)
         pygame.draw.rect(screen,(255,255,255),self.hudP1)
         pygame.draw.rect(screen,(255,255,255),self.hudP2)
@@ -478,9 +468,8 @@ class SceneFight(Scene):
         screen.blit(pygame.transform.flip(self.player2.avatar, True, False), self.avatar2Rect)
         screen.blit(self.nomb1, self.nomb1_rect)
         screen.blit(self.nomb2, self.nomb2_rect)
+
         # Actualizamos y pintamos personaje
-        #screen.blit(pygame.transform.flip(self.player1.sprites[self.player1.state][self.player1.current_hframe], False, False), (200, 200))
-        #screen.blit(pygame.transform.flip(self.player2.sprites[self.player2.state][self.player2.current_hframe], True, False), (600, 200))
         screen.blit(pygame.transform.scale(self.player1.sprites[self.player1.state] \
             [self.player1.current_hframe+self.player1.orientacion], \
             (int(self.player1.sprites[self.player1.state][self.player1.current_hframe+self.player1.orientacion].get_width()/4*3),int(self.player1.sprites[self.player1.state][self.player1.current_hframe+self.player1.orientacion].get_height()/4*3))), \
@@ -489,6 +478,7 @@ class SceneFight(Scene):
             [self.player2.current_hframe+self.player2.orientacion], \
             (int(self.player2.sprites[self.player2.state][self.player2.current_hframe+self.player2.orientacion].get_width()/4*3),int(self.player2.sprites[self.player2.state][self.player2.current_hframe+self.player2.orientacion].get_height()/4*3))), \
             (self.player2.x, self.player2.y))
+        #Menus
         if self.inMenu == 1:
             self.cuentaAtras(screen)
         if self.inMenu == 2:
@@ -520,9 +510,12 @@ class SceneFight(Scene):
 
     def menuPausaFin(self, screen):
         screen.blit(pygame.transform.scale(self.backgroundPause,(WIDTH, HEIGHT)), self.backgroundPause_rect)
-        if self.player1.health == 0:
+        if self.player1.health == 0 or self.player2.health > self.player1.health:
             screen.blit(self.end2, self.end2_rect)
-        if self.player2.health == 0:
+        if self.player2.health == 0 or self.player1.health > self.player2.health:
             screen.blit(self.end1, self.end1_rect)
+        if self.player2.health == self.player1.health:
+            text, text_rect = texto("EMPATE!", WIDTH/2, HEIGHT/4, 80)
+            screen.blit(text, text_rect)
         screen.blit(self.selectPj, self.selectPj_rect)
         screen.blit(self.rematch, self.rematch_rect)
