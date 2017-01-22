@@ -17,8 +17,8 @@ class Player(sprite.Sprite):
     def __init__(self, jsonObject):
         sprite.Sprite.__init__(self)
         self.name = jsonObject['nombre']
-        self.sprites = self.load_sprites(jsonObject['sprites'], 200, 420)
-        self.avatar = load_image(jsonObject['avatar'])
+        self.sprites = [self.load_sprites(jsonObject['sprites'], 200, 420),self.load_sprites(jsonObject['spritesAlt'], 200, 420)]
+        self.avatar = [load_image(jsonObject['avatar']),load_image(jsonObject['avatarAlt'])]
         self.state = "idle"
         self.health = 100
         # Hacia donde mira (0 -> derecha, 4 -> izquierda)
@@ -53,9 +53,7 @@ class Player(sprite.Sprite):
         self.image = None 
         self.rect = None
 
-
     # Actions
-
     def avanzar(self, time):
         """El avance del personaje está definido por su orientación y límitado por su posición o estado.
         No podrá salirse de los límites del escenario.
@@ -201,8 +199,8 @@ class Player(sprite.Sprite):
             return 1    # El personaje sigue vivo
 
     def update(self):
-        ##### Se calculan los atributos necesarios para las colisiones
-        self.image = self.sprites[self.state][self.current_hframe+self.orientacion]
+        ##### Se calculan los atributos necesarios para las colisiones. Da igual si es 0 o 1, ya que sólo varía el color
+        self.image = self.sprites[0][self.state][self.current_hframe+self.orientacion]
         self.rect = self.image.get_rect()
         self.rect.center = (self.x, self.y)
         #####

@@ -10,6 +10,7 @@ from pygame.locals import *
 HEIGHT = 768
 WIDTH = 1024
 
+
 class Scene:
     """Representa un escena abstracta del videojuego.
  
@@ -20,7 +21,7 @@ class Scene:
     def __init__(self, director):
         self.director = director
  
-    def on_update(self):
+    def on_update(self, time):
         "Actualización lógica que se llama automáticamente desde el director."
         raise NotImplemented("Tiene que implementar el método on_update.")
  
@@ -31,6 +32,7 @@ class Scene:
     def on_draw(self, screen):
         "Se llama cuando se quiere dibujar la pantalla."
         raise NotImplemented("Tiene que implementar el método on_draw.")
+
 
 class SceneHome(Scene):
     """Escena inicial del juego, esta es la primera que se carga cuando inicia"""
@@ -67,10 +69,11 @@ class SceneHome(Scene):
                 self.director.change_scene(scene)
 
     def on_draw(self, screen):
-        screen.fill((0,0,0))
+        screen.fill((0, 0, 0))
         screen.blit(self.titulo, self.titulo_rect)
         screen.blit(self.flecha, self.flecha_rect)
         screen.blit(self.iniciar, self.iniciar_rect)
+
 
 class ScenePanel(Scene):
     """Escena de selección de personajes"""
@@ -78,7 +81,7 @@ class ScenePanel(Scene):
     def __init__(self, director):
         Scene.__init__(self, director)
         pygame.display.set_caption("Selección de personaje")
-        self.select1, self.select2 = 0,0
+        self.select1, self.select2 = 0, 0
 
         import json
 
@@ -194,20 +197,26 @@ class ScenePanel(Scene):
                     self.select_music.play()
 
     def on_draw(self, screen):
-        screen.fill((0,0,0))
+        screen.fill((0, 0, 0))
         screen.blit(self.atras, self.atras_rect)
         screen.blit(self.sig, self.sig_rect)
         screen.blit(self.nomb1, self.nomb1_rect)
         screen.blit(self.nomb2, self.nomb2_rect)
         self.dibujarPanel(screen)
 
-        screen.blit(pygame.transform.scale(self.prev1.sprites[self.prev1.state] \
-                                        [self.prev1.current_hframe+self.prev1.orientacion], \
-                                        (int(self.prev1.sprites[self.prev1.state][self.prev1.current_hframe+self.prev1.orientacion].get_width()/4*3),int(self.prev1.sprites[self.prev1.state][self.prev1.current_hframe+self.prev1.orientacion].get_height()/4*3))), \
+        screen.blit(pygame.transform.scale(self.prev1.sprites[0][self.prev1.state] \
+                                        [self.prev1.current_hframe+self.prev1.orientacion],
+                                        (int(self.prev1.sprites[0][self.prev1.state][self.prev1.current_hframe+self.prev1.orientacion].get_width()/4*3),int(self.prev1.sprites[0][self.prev1.state][self.prev1.current_hframe+self.prev1.orientacion].get_height()/4*3))),
                                         (self.prev1.x, self.prev1.y))
-        screen.blit(pygame.transform.scale(self.prev2.sprites[self.prev2.state] \
-                                        [self.prev2.current_hframe+self.prev2.orientacion], \
-                                        (int(self.prev2.sprites[self.prev2.state][self.prev2.current_hframe+self.prev2.orientacion].get_width()/4*3),int(self.prev2.sprites[self.prev2.state][self.prev2.current_hframe+self.prev2.orientacion].get_height()/4*3))), \
+        if self.prev1.name == self.prev2.name:
+            screen.blit(pygame.transform.scale(self.prev2.sprites[1][self.prev2.state] \
+                                        [self.prev2.current_hframe+self.prev2.orientacion],
+                                        (int(self.prev2.sprites[1][self.prev2.state][self.prev2.current_hframe+self.prev2.orientacion].get_width()/4*3),int(self.prev2.sprites[1][self.prev2.state][self.prev2.current_hframe+self.prev2.orientacion].get_height()/4*3))),
+                                        (self.prev2.x, self.prev2.y))
+        else:
+            screen.blit(pygame.transform.scale(self.prev2.sprites[0][self.prev2.state] \
+                                        [self.prev2.current_hframe+self.prev2.orientacion],
+                                        (int(self.prev2.sprites[0][self.prev2.state][self.prev2.current_hframe+self.prev2.orientacion].get_width()/4*3),int(self.prev2.sprites[0][self.prev2.state][self.prev2.current_hframe+self.prev2.orientacion].get_height()/4*3))),
                                         (self.prev2.x, self.prev2.y))
 
     def dibujarPanel(self,screen):
@@ -217,10 +226,10 @@ class ScenePanel(Scene):
             if column == 4:
                 column = 0
                 fila += 1
-            tmp_avatar_rect = i.avatar.get_rect()
+            tmp_avatar_rect = i.avatar[0].get_rect()
             tmp_avatar_rect.centerx = WIDTH/3 + 110*column
             tmp_avatar_rect.centery = HEIGHT/4 + 110*fila
-            screen.blit(i.avatar, tmp_avatar_rect)
+            screen.blit(i.avatar[0], tmp_avatar_rect)
             #Mismo personaje por los dos
             if self.charac1 == self.charac2 and self.charac1 == i:
                 marco_rect = self.marcoComun.get_rect()
@@ -241,6 +250,7 @@ class ScenePanel(Scene):
                 screen.blit(self.marco2, marco_rect2)
 
             column += 1
+
 
 class SceneFight(Scene):
 
@@ -273,18 +283,18 @@ class SceneFight(Scene):
         self.player2 = copy.copy(player2)
         self.player2.x = 800
 
-        self.avatar1Rect = self.player1.avatar.get_rect()
+        self.avatar1Rect = self.player1.avatar[0].get_rect()
         self.avatar1Rect.centerx = 53
         self.avatar1Rect.centery = 52
 
-        self.avatar2Rect = self.player2.avatar.get_rect()
+        self.avatar2Rect = self.player2.avatar[0].get_rect()
         self.avatar2Rect.centerx = 971
         self.avatar2Rect.centery = 52
 
         self.nomb1, self.nomb1_rect = texto(self.player1.name, 150, 20)
         self.nomb2, self.nomb2_rect = texto(self.player2.name, WIDTH-150, 20)
-        self.nomb1_rect.centerx = self.nomb1.get_width() + self.player1.avatar.get_width()
-        self.nomb2_rect.centerx = WIDTH - self.nomb2.get_width() - self.player2.avatar.get_width()
+        self.nomb1_rect.centerx = self.nomb1.get_width() + self.player1.avatar[0].get_width()
+        self.nomb2_rect.centerx = WIDTH - self.nomb2.get_width() - self.player2.avatar[0].get_width()
         
         self.countdown = 93 # tiempo de combate
         self.time2 = 0
@@ -464,20 +474,29 @@ class SceneFight(Scene):
         screen.blit(timeCD, time_rect)
         pygame.draw.rect(screen,(255,255,255),self.hudP1)
         pygame.draw.rect(screen,(255,255,255),self.hudP2)
-        screen.blit(self.player1.avatar, self.avatar1Rect)
-        screen.blit(pygame.transform.flip(self.player2.avatar, True, False), self.avatar2Rect)
+        screen.blit(self.player1.avatar[0], self.avatar1Rect)
+        if self.player1.name == self.player2.name:
+            screen.blit(pygame.transform.flip(self.player2.avatar[1], True, False), self.avatar2Rect)
+        else:
+            screen.blit(pygame.transform.flip(self.player2.avatar[0], True, False), self.avatar2Rect)
         screen.blit(self.nomb1, self.nomb1_rect)
         screen.blit(self.nomb2, self.nomb2_rect)
 
         # Actualizamos y pintamos personaje
-        screen.blit(pygame.transform.scale(self.player1.sprites[self.player1.state] \
-            [self.player1.current_hframe+self.player1.orientacion], \
-            (int(self.player1.sprites[self.player1.state][self.player1.current_hframe+self.player1.orientacion].get_width()/4*3),int(self.player1.sprites[self.player1.state][self.player1.current_hframe+self.player1.orientacion].get_height()/4*3))), \
-            (self.player1.x, self.player1.y))
-        screen.blit(pygame.transform.scale(self.player2.sprites[self.player2.state] \
-            [self.player2.current_hframe+self.player2.orientacion], \
-            (int(self.player2.sprites[self.player2.state][self.player2.current_hframe+self.player2.orientacion].get_width()/4*3),int(self.player2.sprites[self.player2.state][self.player2.current_hframe+self.player2.orientacion].get_height()/4*3))), \
-            (self.player2.x, self.player2.y))
+        screen.blit(pygame.transform.scale(self.player1.sprites[0][self.player1.state] \
+                                            [self.player1.current_hframe+self.player1.orientacion],
+                                            (int(self.player1.sprites[0][self.player1.state][self.player1.current_hframe+self.player1.orientacion].get_width()/4*3),int(self.player1.sprites[0][self.player1.state][self.player1.current_hframe+self.player1.orientacion].get_height()/4*3))),
+                                            (self.player1.x, self.player1.y))
+        if self.player1.name == self.player2.name:
+            screen.blit(pygame.transform.scale(self.player2.sprites[1][self.player2.state] \
+                                        [self.player2.current_hframe+self.player2.orientacion],
+                                        (int(self.player2.sprites[1][self.player2.state][self.player2.current_hframe+self.player2.orientacion].get_width()/4*3),int(self.player2.sprites[1][self.player2.state][self.player2.current_hframe+self.player2.orientacion].get_height()/4*3))),
+                                        (self.player2.x, self.player2.y))
+        else:
+            screen.blit(pygame.transform.scale(self.player2.sprites[0][self.player2.state] \
+                                        [self.player2.current_hframe+self.player2.orientacion],
+                                        (int(self.player2.sprites[0][self.player2.state][self.player2.current_hframe+self.player2.orientacion].get_width()/4*3),int(self.player2.sprites[0][self.player2.state][self.player2.current_hframe+self.player2.orientacion].get_height()/4*3))),
+                                        (self.player2.x, self.player2.y))
         #Menus
         if self.inMenu == 1:
             self.cuentaAtras(screen)

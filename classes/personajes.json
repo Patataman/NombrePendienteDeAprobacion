@@ -1,11 +1,17 @@
 [
 	{"nombre":"Hombre de Incógnito",
 	"sprites":"assets/images/sprites/Sprite_incognito_ficha.png",
-	"avatar":"assets/images/avatares/incognito_avatar.png"},
+	"spritesAlt":"assets/images/sprites/Sprite_incognito_ficha.png",
+	"avatar":"assets/images/avatares/incognito_avatar.png",
+	"avatarAlt":"assets/images/avatares/incognito_avatar.png"},
 	{"nombre":"Magickarp",
 	"sprites":"assets/images/sprites/Sprite_magickarp_ficha.png",
-	"avatar":"assets/images/avatares/magickarp_avatar.png"},
+	"spritesAlt":"assets/images/sprites/Sprite_magickarp_fichaAlt.png",
+	"avatar":"assets/images/avatares/magickarp_avatar.png",
+	"avatarAlt":"assets/images/avatares/magickarp_avatarAlt.png"},
 	{"nombre":"Tio molongui",
 	"sprites":"assets/images/sprites/Sprite_chachiWachi_ficha.png",
-	"avatar":"assets/images/avatares/chachiWachi_avatar.png"}
+	"spritesAlt":"assets/images/sprites/Sprite_chachiWachi_ficha.png",
+	"avatar":"assets/images/avatares/chachiWachi_avatar.png",
+	"avatarAlt":"assets/images/avatares/chachiWachi_avatar.png"}
 ]
