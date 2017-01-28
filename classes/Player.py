@@ -3,6 +3,8 @@
 from pygame import sprite
 from .Functions import *
 
+FRAMES = 12
+
 class Player(sprite.Sprite):
     """Representa cada personaje del juego durante la partida.
 
@@ -49,10 +51,10 @@ class Player(sprite.Sprite):
         No podrá salirse de los límites del escenario.
         No podrá avanzar si está ejecutando otra acción que no sea salto.
         """
-        espacio = 0.25
+        espacio = 0.5
         #Cuando se salta, el desplazamiento es mayor
         if self.state == "saltar":
-            espacio = 0.5
+            espacio = 1
         if self.state != 'saltar':
             self.state = "avanzar"
         self.vulnerable = True
@@ -69,10 +71,10 @@ class Player(sprite.Sprite):
         No podrá avanzar si está ejecutando otra acción que no sea salto.       
         """
         
-        espacio = 0.25
+        espacio = 0.5
         #Cuando se salta, el desplazamiento es mayor
         if self.state == "saltar":
-            espacio = 0.5
+            espacio = 1
         if self.state != 'saltar':
             self.state = "defender"
         self.vulnerable = False
@@ -131,7 +133,7 @@ class Player(sprite.Sprite):
 
         La variable time se utiliza para el movimiento. Igual que en avanzar y defender
 
-        e = 1/2 * a * t² + Vo * t + Eo      
+        e = 1/2 * a * t² + Vo * t + Eo
         """
 
         self.state = "saltar"
@@ -174,23 +176,24 @@ class Player(sprite.Sprite):
 
     def update(self):
         ##### Se calculan los atributos necesarios para las colisiones. Da igual si es 0 o 1, ya que sólo varía el color
-        self.image = self.sprites[0][self.state][self.current_hframe+self.orientacion]
+        self.image = self.sprites[0][self.state][self.current_hframe//4+self.orientacion]
         self.rect = self.image.get_rect()
         self.rect.center = (self.x, self.y)
         #####
 
         # Actualizamos frames
         self.current_hframe += 1
-        if self.current_hframe == 4:
+        if self.current_hframe == FRAMES:
             self.current_hframe = 0
 
         # Actualizamos posición si estamos en un salto
+        # e = 1/2 * a * t² + Vo * t + Eo
         if self.state == "saltar" and self.cdSalto > 0:
             if self.cdSalto > 60:
-                self.y -= 1/2 * 1 * 1 + 0 * 1 + 100
+                self.y -= 1/2 * 1 * 1 + 0 * 1 + 50
             else:
-                self.y += 1/2 * 1 * 1 + 0 * 1 + 100
-            self.cdSalto -= 20
+                self.y += 1/2 * 1 * 1 + 0 * 1 + 50
+            self.cdSalto -= 10
             if self.cdSalto <= 0:
                 self.state = "idle"
         if self.cdSalto < 0:
