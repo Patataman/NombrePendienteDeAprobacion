@@ -17,16 +17,22 @@ class Player(sprite.Sprite):
     def __init__(self, jsonObject):
         sprite.Sprite.__init__(self)
         self.name = jsonObject['nombre']
-        self.sprites = [self.load_sprites(jsonObject['sprites'], 200, 420),self.load_sprites(jsonObject['spritesAlt'], 200, 420)]
-        self.avatar = [load_image(jsonObject['avatar']),load_image(jsonObject['avatarAlt'])]
+        self.sprites = [self.load_sprites(jsonObject['sprites'], 200, 420),
+                        self.load_sprites(jsonObject['spritesAlt'], 200, 420)]
+        self.avatar = [load_image(jsonObject['avatar']),
+                        load_image(jsonObject['avatarAlt'])]
+        self.restart()
+
+    def restart(self):
+        #Reiniciar atributos del personaje
         self.state = "idle"
         self.health = 100
         # Hacia donde mira (0 -> derecha, 4 -> izquierda)
         self.current_hframe = 0 # Lo necesitaremos para hacer el ciclo de animación
         self.orientacion = 0
-        self.x = 75
-        self.y = 250
-        self.vulnerable = True
+        self.x = 75         #X inicial
+        self.y = 250        #Y inicial
+        self.vulnerable = False
         self.golpeando = False
         # Tanto el salto como cualquier acción dura varias iteraciones, por lo que se debe de tener en cuenta
         # para mantener el flujo correctamente y evitar solapamiento.
@@ -34,22 +40,6 @@ class Player(sprite.Sprite):
         self.cdAction = 0
         self.ataque = 0
         # Atributos necesario para calcular colisiones entre sprites
-        self.image = None 
-        self.rect = None
-
-    def restart(self):
-        #Reiniciar atributos del personaje
-        self.state = "idle"
-        self.health = 100
-        self.current_hframe = 0
-        self.orientacion = 0
-        self.x = 75
-        self.y = 250
-        self.vulnerable = True
-        self.golpeando = False
-        self.cdSalto = 0
-        self.cdAction = 0
-        self.ataque = 0
         self.image = None 
         self.rect = None
 
@@ -92,22 +82,6 @@ class Player(sprite.Sprite):
         else:
             if self.x <= 850: # No estamos en los límites del escenario
                 self.x += time*espacio
-
-    def defenderSalto(self):
-        """El personaje podrá saltar hacia atrás manteniendo su defensa.
-        No podrá salirse de los límites del escenario.
-        Estará saltando.
-        Sólo mantendrá su defensa si se desplaza hacia atrás durante el salto.
-        """
-        self.state = "defenderSalto"
-        self.vulnerable = False
-        if self.orientacion == 0: # Avanzamos hacia la derecha
-            if self.x >= 25: # No estamos en los límites del escenario
-                self.x -= time*0.25
-        else:
-            if self.x <= 850: # No estamos en los límites del escenario
-                self.x += time*0.25
-
 
     def ataqueDebil(self, playerObjective):
         """El ataque débil se caracteriza por ser más flojo pero más rápido. Esto en nuestro juego se traduce
@@ -190,8 +164,8 @@ class Player(sprite.Sprite):
         lleguen a 0 o menos, el personaje habrá sido debilitado, perdiendo el enfrentamiento.
         Cuando el personaje es debilitado, la función devuelve 0, en caso contrario, 1.
         """
-
-        self.health -= dmg
+        if self.vulnerable:     #Si el personaje es vulnerable recibe daño
+            self.health -= dmg
         if self.health < 1:
             self.health = 0
             return 0    # El personaje ha sido debilitado
