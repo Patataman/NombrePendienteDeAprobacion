@@ -2,6 +2,7 @@
 
 import pygame
 from pygame.locals import *
+from .Functions import load_image
 
 class Director:
 	"""Representa el objeto principal del juego.
@@ -13,7 +14,9 @@ class Director:
 	derivados de Scene."""
 
 	def __init__(self):
-		self.screen = pygame.display.set_mode([1024,768])
+		self.screen = pygame.display.set_mode([1024,768], pygame.RESIZABLE)
+		#Poner el iconito a la ventana
+		pygame.display.set_icon(load_image("assets/images/misc/icon32.png"))
 		pygame.display.set_caption("NombrePendienteDeAprobacion")
 		self.scene = None
 		self.quit_flag = False
