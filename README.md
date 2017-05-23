@@ -3,7 +3,7 @@
 Proyecto del [GUL](https://github.com/guluc3m) desarrollado por [Patataman](https://github.com/Patataman) y [SeindElBardo](https://github.com/SeindElBardo).
 
 Este repositorio contiene un juego (muy modesto, todo sea dicho) de lucha en 2D para dos jugadores.
-El juego se encuentra totalmente desarrollado en Python, haciendo uso de la librería [Pygame] (http://pygame.org).
+El juego se encuentra totalmente desarrollado en Python, haciendo uso de la librería [Pygame](http://pygame.org).
 
 El juego se compone de 3 pantallas:
 - Inicio
