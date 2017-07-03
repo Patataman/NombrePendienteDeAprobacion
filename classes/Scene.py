@@ -85,7 +85,7 @@ class ScenePanel(Scene):
 
         import json
 
-        pjs = json.load(open('classes/characters.json'))
+        pjs = json.load(open(resource_path('classes/characters.json')))
 
         #Lista de objetos personajes (siendo cada posición un tipo de personaje)
         #El panel se sitúa en el medio de la pantalla y
@@ -115,9 +115,9 @@ class ScenePanel(Scene):
 
         #Carga la musica
         # loop = -1 -> Loop infinito
-        self.background_music = pygame.mixer.Sound("assets/sounds/341362__sirkoto51__anime-encounter-loop-1.wav")
+        self.background_music = pygame.mixer.Sound(resource_path("assets/sounds/341362__sirkoto51__anime-encounter-loop-1.wav"))
         self.background_music.play(-1)
-        self.select_music = pygame.mixer.Sound("assets/sounds/173327__soundnimja__blip-2.wav")
+        self.select_music = pygame.mixer.Sound(resource_path("assets/sounds/173327__soundnimja__blip-2.wav"))
         #Pone la música a funcionar
 
     def on_update(self, time):
@@ -139,7 +139,7 @@ class ScenePanel(Scene):
                 scene = SceneFight(self.director, self.prev1, self.prev2)
                 self.director.change_scene(scene)
                 self.background_music.stop()
-                pygame.mixer.Sound("assets/sounds/58773__syna-max__anime-shing.wav").play()
+                pygame.mixer.Sound(resource_path("assets/sounds/58773__syna-max__anime-shing.wav")).play()
             #Se selecciona un luchador
             if keys[K_SPACE]:
                 #Se guarda el pj seleccionado y se actualiza la vista previa
