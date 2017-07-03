@@ -18,7 +18,7 @@ class Player(sprite.Sprite):
 
     def __init__(self, jsonObject):
         sprite.Sprite.__init__(self)
-        self.name = jsonObject['nombre']
+        self.name = jsonObject['name']
         self.sprites = [self.load_sprites(jsonObject['sprites'], 200, 420),
                         self.load_sprites(jsonObject['spritesAlt'], 200, 420)]
         self.avatar = [load_image(jsonObject['avatar']),

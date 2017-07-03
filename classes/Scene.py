@@ -1,9 +1,9 @@
 # -*- coding: utf-8 -*-
 
+import pygame, sys, math, copy, time
 from .Director import Director
 from .Functions import *
 from .Player import *
-import pygame, sys, math, copy, time
 from pygame.locals import *
 #import Personajes
 
@@ -41,8 +41,8 @@ class SceneHome(Scene):
         Scene.__init__(self, director)
 
         #Altura: Segundo cuarto
-        self.iniciar, self.iniciar_rect = texto('Seleccion de personajes', WIDTH/2, HEIGHT/2, 40)
-        self.titulo, self.titulo_rect = texto('Titulo', WIDTH/2, HEIGHT/4, 75, (255,255,255))
+        self.iniciar, self.iniciar_rect = texto('Character selection', WIDTH/2, HEIGHT/2, 40)
+        self.titulo, self.titulo_rect = texto('Title', WIDTH/2, HEIGHT/4, 75, (255,255,255))
 
         self.flecha = load_image("assets/images/misc/flecha.png")
         #self.flecha = pygame.transform.scale(self.flecha, (self.iniciar.get_width()/4*3,self.iniciar.get_height()/4*3+10))
@@ -80,12 +80,12 @@ class ScenePanel(Scene):
 
     def __init__(self, director):
         Scene.__init__(self, director)
-        pygame.display.set_caption("Selección de personaje")
+        pygame.display.set_caption("Character selection")
         self.select1, self.select2 = 0, 0
 
         import json
 
-        pjs = json.load(open('classes/personajes.json'))
+        pjs = json.load(open('classes/characters.json'))
 
         #Lista de objetos personajes (siendo cada posición un tipo de personaje)
         #El panel se sitúa en el medio de la pantalla y
@@ -269,13 +269,13 @@ class SceneFight(Scene):
 
         #Texto del menú de pausa
         self.pause, self.pause_rect = texto('PAUSA', WIDTH/2, HEIGHT/4, 80)
-        self.selectPj, self.selectPj_rect = texto('Volver a seleccion de personaje (F1)', WIDTH/2, HEIGHT/2, 40)
-        self.reanudar, self.reanudar_rect = texto('Reanudar (ESC)', WIDTH/2, HEIGHT/2+100, 40)
+        self.selectPj, self.selectPj_rect = texto('Back to Character selection (F1)', WIDTH/2, HEIGHT/2, 40)
+        self.reanudar, self.reanudar_rect = texto('Resume (ESC)', WIDTH/2, HEIGHT/2+100, 40)
 
         #Texto del menú de fin de partida
-        self.end1, self.end1_rect = texto('Gana el jugador 1!', WIDTH/2, HEIGHT/4, 80)
-        self.end2, self.end2_rect = texto('Gana el jugador 2!', WIDTH/2, HEIGHT/4, 80)
-        self.rematch, self.rematch_rect = texto('Revancha (F2)', WIDTH/2, HEIGHT/2+100,40)
+        self.end1, self.end1_rect = texto('Player 1 wins!', WIDTH/2, HEIGHT/4, 80)
+        self.end2, self.end2_rect = texto('Player 2 wins!', WIDTH/2, HEIGHT/4, 80)
+        self.rematch, self.rematch_rect = texto('Revenge! (F2)', WIDTH/2, HEIGHT/2+100,40)
 
         # Se inicializan los personajes y avatares
         self.player1 = copy.copy(player1)
@@ -514,7 +514,7 @@ class SceneFight(Scene):
             self.player2.orientacion = 0
 
     def cuentaAtras(self, screen):
-        countdownList = ["3","2","1","Luchad!"]
+        countdownList = ["3","2","1","FIGHT!"]
         if self.time2/1000 < 4:
             countdown, countdown_rect = texto(countdownList[int(self.time2/1000)], WIDTH/2, HEIGHT/2, 75)
             screen.blit(countdown, countdown_rect)
@@ -534,7 +534,7 @@ class SceneFight(Scene):
         if self.player2.health == 0 or self.player1.health > self.player2.health:
             screen.blit(self.end1, self.end1_rect)
         if self.player2.health == self.player1.health:
-            text, text_rect = texto("EMPATE!", WIDTH/2, HEIGHT/4, 80)
+            text, text_rect = texto("IT'S A DRAW!", WIDTH/2, HEIGHT/4, 80)
             screen.blit(text, text_rect)
         screen.blit(self.selectPj, self.selectPj_rect)
         screen.blit(self.rematch, self.rematch_rect)

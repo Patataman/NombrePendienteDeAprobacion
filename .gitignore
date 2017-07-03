@@ -6,3 +6,6 @@
 *.nav
 *.snm
 .idea
+build/*
+dist/*
+*.spec
