@@ -1,9 +1,10 @@
 # -*- coding: utf-8 -*-
 
 from pygame import sprite
+from pygame.locals import *
 from .Functions import *
 
-FRAMES = 12
+FRAMES = 16
 
 class Player(sprite.Sprite):
     """Representa cada personaje del juego durante la partida.
@@ -16,13 +17,16 @@ class Player(sprite.Sprite):
     Este objeto se debe inicializar después de terminar la
     selección de personajes con los datos del personaje escogido."""
 
-    def __init__(self, jsonObject):
+    def __init__(self, jsonObject, num, device):
         sprite.Sprite.__init__(self)
         self.name = jsonObject['name']
+        self.device = device
         self.sprites = [self.load_sprites(jsonObject['sprites'], 200, 420),
                         self.load_sprites(jsonObject['spritesAlt'], 200, 420)]
         self.avatar = [load_image(jsonObject['avatar']),
                         load_image(jsonObject['avatarAlt'])]
+        self.keyMap = {}
+        self.setPlayer(num, device)
         self.restart()
 
     def restart(self):
@@ -44,6 +48,22 @@ class Player(sprite.Sprite):
         # Atributos necesario para calcular colisiones entre sprites
         self.image = None 
         self.rect = None
+
+    def setPlayer(self, num, device):
+        if device == "keyboard":
+            self.keyMap["up"] = K_w if num == 1 else K_UP
+            self.keyMap["down"] = K_s if num == 1 else K_DOWN
+            self.keyMap["left"] = K_a if num == 1 else K_LEFT
+            self.keyMap["right"] = K_d if num == 1 else K_RIGHT
+            self.keyMap["weakAttack"] = K_f if num == 1 else K_k
+            self.keyMap["strongAttack"] = K_g if num == 1 else K_l
+        elif device == "pad":
+            self.keyMap["up"] = (0,1)
+            self.keyMap["down"] = (0,-1)
+            self.keyMap["left"] = (-1,0)
+            self.keyMap["right"] = (0,1)
+            self.keyMap["weakAttack"] = 2       #Number of the button (X on Xbox controller)
+            self.keyMap["strongAttack"] = 3     #Number of the button (Y on Xbox controller)
 
     # Actions
     def avanzar(self, time):
@@ -96,10 +116,10 @@ class Player(sprite.Sprite):
         self.golpeando = True
         if self.ataque != 2:
             self.ataque += 1
-            self.cdAction = 5
+            self.cdAction = 10
         else:
             self.ataque = 0
-            self.cdAction = 10
+            self.cdAction = 30
             if sprite.collide_mask(self, playerObjective):
                 playerObjective.getHurt(5)
 
@@ -111,7 +131,7 @@ class Player(sprite.Sprite):
         self.state = "ataqueFuerte"
         self.vulnerable = True
         self.golpeando = True
-        self.cdAction = 20
+        self.cdAction = 40
         if sprite.collide_mask(self, playerObjective):
             playerObjective.getHurt(12)
 
@@ -201,7 +221,117 @@ class Player(sprite.Sprite):
         self.cdAction -= 2
         if self.cdAction < 0:
             self.cdAction = 0
-        return self.cdSalto 
+        return self.cdSalto
+
+    def actionKeyboard(self, keys, time, menu, enemy):
+        ## Ir derecha
+        if keys[self.keyMap["right"]] and (not self.cdAction):
+            if self.orientacion == 0:
+                if not sprite.collide_mask(self, enemy):
+                    self.avanzar(time)
+                else:
+                    self.avanzar(0)
+            else:
+                self.defender(time)
+        ## Ir Izquierda
+        if keys[self.keyMap["left"]] and (not self.cdAction):
+            if self.orientacion == 4:
+                if not sprite.collide_mask(self, enemy):
+                    self.avanzar(time)
+                else:
+                    self.avanzar(0)
+            else:
+                self.defender(time)
+        ## Saltar                
+        if keys[self.keyMap["up"]] and (not self.cdAction and not self.cdSalto):
+            self.saltar()
+
+        if keys[self.keyMap["up"]] and keys[self.keyMap["right"]]:
+            if self.orientacion == 0:
+                self.avanzar(time)
+            else:
+                self.defender(time)
+
+        if keys[self.keyMap["up"]] and keys[self.keyMap["left"]]:
+            if self.orientacion == 4:
+                self.avanzar(time)
+            else:
+                self.defender(time)
+
+        if menu == 0:
+            ## AtaqueDebil
+            if keys[self.keyMap["weakAttack"]] and not self.cdAction:
+                if self.cdSalto:
+                    a=1
+                    #self.ataqueSalto()
+                elif not self.cdSalto and keys[self.keyMap["down"]]:
+                    self.ataqueBajo()
+                else:    
+                    self.ataqueDebil(enemy)
+            ## AtaqueFuerte
+            if keys[self.keyMap["strongAttack"]] and not self.cdAction:
+                if self.cdSalto:
+                    a=1
+                    #self.ataqueSalto()
+                elif not self.cdSalto and keys[self.keyMap["down"]]:
+                    self.ataqueBajo()
+                else:
+                    self.ataqueFuerte(enemy)
+
+    def actionGamepad(self, pad, time, menu, enemy):
+        ## Ir derecha
+        if keys[self.keyMap["right"]] and (not self.cdAction):
+            if self.orientacion == 0:
+                if not sprite.collide_mask(self, enemy):
+                    self.avanzar(time)
+                else:
+                    self.avanzar(0)
+            else:
+                self.defender(time)
+        ## Ir Izquierda
+        if keys[self.keyMap["left"]] and (not self.cdAction):
+            if self.orientacion == 4:
+                if not sprite.collide_mask(self, enemy):
+                    self.avanzar(time)
+                else:
+                    self.avanzar(0)
+            else:
+                self.defender(time)
+        ## Saltar                
+        if keys[self.keyMap["up"]] and (not self.cdAction and not self.cdSalto):
+            self.saltar()
+
+        if keys[self.keyMap["up"]] and keys[self.keyMap["right"]]:
+            if self.orientacion == 0:
+                self.avanzar(time)
+            else:
+                self.defender(time)
+
+        if keys[self.keyMap["up"]] and keys[self.keyMap["left"]]:
+            if self.orientacion == 4:
+                self.avanzar(time)
+            else:
+                self.defender(time)
+
+        if menu == 0:
+            ## AtaqueDebil
+            if keys[self.keyMap["weakAttack"]] and not self.cdAction:
+                if self.cdSalto:
+                    a=1
+                    #self.ataqueSalto()
+                elif not self.cdSalto and keys[self.keyMap["down"]]:
+                    self.ataqueBajo()
+                else:    
+                    self.ataqueDebil(enemy)
+            ## AtaqueFuerte
+            if keys[self.keyMap["strongAttack"]] and not self.cdAction:
+                if self.cdSalto:
+                    a=1
+                    #self.ataqueSalto()
+                elif not self.cdSalto and keys[self.keyMap["down"]]:
+                    self.ataqueBajo()
+                else:
+                    self.ataqueFuerte(enemy)
 
     def load_sprites(self, filename, width, height):
         """Los sprites de los personajes se cargan desde una imagen donde están todos contenidos y

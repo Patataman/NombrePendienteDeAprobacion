@@ -10,6 +10,7 @@ from pygame.locals import *
 HEIGHT = 768
 WIDTH = 1024
 
+JOYSTICKS = []
 
 class Scene:
     """Representa un escena abstracta del videojuego.
@@ -40,6 +41,10 @@ class SceneHome(Scene):
     def __init__(self, director):
         Scene.__init__(self, director)
 
+        JOYSTICKS = [pygame.joystick.Joystick(x) for x in range(pygame.joystick.get_count())]
+        for j in JOYSTICKS:
+            j.init()
+
         #Altura: Segundo cuarto
         self.iniciar, self.iniciar_rect = texto('Character selection', WIDTH/2, HEIGHT/2, 40)
         self.titulo, self.titulo_rect = texto('Title', WIDTH/2, HEIGHT/4, 75, (255,255,255))
@@ -65,7 +70,7 @@ class SceneHome(Scene):
         keys = pygame.key.get_pressed()
         if pygame.KEYDOWN:
             if keys[K_RETURN]:
-                scene = ScenePanel(self.director)
+                scene = SceneControl(self.director)
                 self.director.change_scene(scene)
 
     def on_draw(self, screen):
@@ -74,11 +79,73 @@ class SceneHome(Scene):
         screen.blit(self.flecha, self.flecha_rect)
         screen.blit(self.iniciar, self.iniciar_rect)
 
+class SceneControl(Scene):
+    """Escena inicial del juego, esta es la primera que se carga cuando inicia"""
+
+    def __init__(self, director):
+        Scene.__init__(self, director)
+
+        JOYSTICKS = [pygame.joystick.Joystick(x) for x in range(pygame.joystick.get_count())]
+
+        #Altura: Segundo cuarto
+        self.select, self.select_rect = texto('Select Controller', WIDTH/2, HEIGHT/5-50, 75, (255,255,255))
+        self.cont, self.cont_rect = texto('Continue (ENTER)', WIDTH/2, HEIGHT-75, 50, (255,255,255))
+        self.device1, self.device2 = "keyboard", "keyboard"
+
+        self.keyboard = load_image("assets/images/misc/keyboard.png")
+        self.keyboard_rect = self.keyboard.get_rect()
+        self.keyboard_rect.centerx = WIDTH/2
+        self.keyboard_rect.centery = HEIGHT/2-50
+        self.pad = load_image("assets/images/misc/pad.png")
+        self.pad_rect = self.pad.get_rect()
+        self.pad_rect.centerx = WIDTH/2
+        self.pad_rect.centery = HEIGHT/2+150
+        self.player1, self.player1_rect = texto("P1", self.keyboard_rect.centerx - self.keyboard_rect.width - 50, self.keyboard_rect.centery, 60, (255,255,255))
+        self.player2, self.player2_rect = texto("P2", self.keyboard_rect.centerx + self.keyboard_rect.width + 50, self.keyboard_rect.centery, 60, (255,255,255))
+
+        #Carga la musica
+        #pygame.mixer.music.load("assets/music/title_theme.mp3")
+        #Pone la música a funcionar
+        # loop = -1 -> Loop infinito
+        #pygame.mixer.music.play(-1)
+
+    def on_update(self, time):
+        pass
+
+    def on_event(self, time, event):
+        #Al pulsar una tecla...
+        keys = pygame.key.get_pressed()
+        if pygame.KEYDOWN:
+            if keys[K_RETURN]:
+                scene = ScenePanel(self.director, self.device1, self.device2)
+                self.director.change_scene(scene)
+            if keys[K_w] and self.device1 != "keyboard":
+                self.player1_rect.centery = self.keyboard_rect.centery
+                self.device1 = "keyboard"
+            if keys[K_s] and self.device1 != "pad":
+                self.player1_rect.centery = self.pad_rect.centery
+                self.device1 = "pad"
+            if keys[K_UP] and self.device2 != "keyboard":
+                self.player2_rect.centery = self.keyboard_rect.centery
+                self.device2 = "keyboard"
+            if keys[K_DOWN] and self.device2 != "pad":
+                self.player2_rect.centery = self.pad_rect.centery
+                self.device2 = "pad"
+
+    def on_draw(self, screen):
+        screen.fill((0, 0, 0))
+        screen.blit(self.select, self.select_rect)
+        screen.blit(self.cont, self.cont_rect)
+        screen.blit(self.player1, self.player1_rect)
+        screen.blit(self.player2, self.player2_rect)
+        screen.blit(self.keyboard, self.keyboard_rect)
+        screen.blit(self.pad, self.pad_rect)
+
 
 class ScenePanel(Scene):
     """Escena de selección de personajes"""
 
-    def __init__(self, director):
+    def __init__(self, director, device1, device2):
         Scene.__init__(self, director)
         pygame.display.set_caption("Character selection")
         self.select1, self.select2 = 0, 0
@@ -92,11 +159,10 @@ class ScenePanel(Scene):
         # a los lados la vista previa del pj
         self.panel = []
         for pj in pjs:
-            tmp_pj = Player(pj)
-            self.panel.append(tmp_pj)
+            self.panel.append([Player(pj, 1, device1),  Player(pj, 2, device2)])
         
-        self.charac1, self.charac2 = self.panel[0], self.panel[0]
-        self.prev1, self.prev2 = copy.copy(self.panel[0]), copy.copy(self.panel[0])
+        self.charac1, self.charac2 = self.panel[0][0], self.panel[0][0]
+        self.prev1, self.prev2 = self.panel[0][0], self.panel[0][1]
         self.nomb1, self.nomb1_rect = texto(self.prev1.name, 150, 100, 35)
         self.nomb2, self.nomb2_rect = texto(self.prev2.name, WIDTH-150, 100, 35)
         self.prev1.orientacion = 0
@@ -132,7 +198,7 @@ class ScenePanel(Scene):
             #Se selecciona atrás
             if keys[K_F1]:
                 scene = SceneHome(self.director)
-                self.background_music.stop()
+                self.background_music.fadeout(3)
                 self.director.change_scene(scene)
             #Se selecciona luchar
             if keys[K_F2]:
@@ -143,57 +209,57 @@ class ScenePanel(Scene):
             #Se selecciona un luchador
             if keys[K_SPACE]:
                 #Se guarda el pj seleccionado y se actualiza la vista previa
-                self.charac1 = self.panel[self.select1]
-                self.prev1 = copy.copy(self.panel[self.select1])
+                self.charac1 = self.panel[self.select1][0]
+                self.prev1 = self.panel[self.select1][0]
                 self.prev1.orientacion = 0
                 self.prev1.x = 75
                 self.nomb1, self.nomb1_rect = texto(self.prev1.name, 150, 100, 35)
             if keys[K_RETURN]:
                 #Se guarda el pj seleccionado y se actualiza la vista previa
-                self.charac2 = self.panel[self.select2]
-                self.prev2 = self.panel[self.select2]
+                self.charac2 = self.panel[self.select2][0]
+                self.prev2 = self.panel[self.select2][1]
                 self.prev2.orientacion = 4
                 self.prev2.x = 800
                 self.nomb2, self.nomb2_rect = texto(self.prev2.name, WIDTH-150, 100, 35)
             if keys[K_w]:
-                if self.select1/4 != 0:
+                if self.select1//4 != 0:
                     self.select1 -= 4
-                    self.charac1 = self.panel[self.select1]
+                    self.charac1 = self.panel[self.select1][0]
                     self.select_music.play()
             if keys[K_UP]:
-                if self.select2/4 != 0:
+                if self.select2//4 != 0:
                     self.select2 -= 4
-                    self.charac2 = self.panel[self.select2]
+                    self.charac2 = self.panel[self.select2][0]
                     self.select_music.play()
             if keys[K_a]:
                 if self.select1 % 4 != 0:
                     self.select1 -= 1
-                    self.charac1 = self.panel[self.select1]
+                    self.charac1 = self.panel[self.select1][0]
                     self.select_music.play()
             if keys[K_LEFT]:
                 if self.select2 % 4 != 0:
                     self.select2 -= 1
-                    self.charac2 = self.panel[self.select2]
+                    self.charac2 = self.panel[self.select2][0]
                     self.select_music.play()
             if keys[K_s]:
-                if self.select1/4+1 != self.max_filas and self.select1+4 < len(self.panel):
+                if self.select1//4+1 != self.max_filas and self.select1+4 < len(self.panel):
                     self.select1 += 4
-                    self.charac1 = self.panel[self.select1]
+                    self.charac1 = self.panel[self.select1][0]
                     self.select_music.play()
             if keys[K_DOWN]:
-                if self.select2/4+1 != self.max_filas and self.select2+4 < len(self.panel):
+                if self.select2//4+1 != self.max_filas and self.select2+4 < len(self.panel):
                     self.select2 += 4
-                    self.charac2 = self.panel[self.select2]
+                    self.charac2 = self.panel[self.select2][0]
                     self.select_music.play()
             if keys[K_d]:
                 if self.select1 % 4 != 3 and self.select1 != len(self.panel)-1:
                     self.select1 += 1
-                    self.charac1 = self.panel[self.select1]
+                    self.charac1 = self.panel[self.select1][0]
                     self.select_music.play()
             if keys[K_RIGHT]:
                 if self.select2 % 4 != 3 and self.select2 != len(self.panel)-1:
                     self.select2 += 1
-                    self.charac2 = self.panel[self.select2]
+                    self.charac2 = self.panel[self.select2][0]
                     self.select_music.play()
 
     def on_draw(self, screen):
@@ -226,24 +292,24 @@ class ScenePanel(Scene):
             if column == 4:
                 column = 0
                 fila += 1
-            tmp_avatar_rect = i.avatar[0].get_rect()
+            tmp_avatar_rect = i[0].avatar[0].get_rect()
             tmp_avatar_rect.centerx = WIDTH/3 + 110*column
             tmp_avatar_rect.centery = HEIGHT/4 + 110*fila
-            screen.blit(i.avatar[0], tmp_avatar_rect)
+            screen.blit(i[0].avatar[0], tmp_avatar_rect)
             #Mismo personaje por los dos
-            if self.charac1 == self.charac2 and self.charac1 == i:
+            if self.charac1 == self.charac2 and self.charac1 == i[0]:
                 marco_rect = self.marcoComun.get_rect()
                 marco_rect.centerx = WIDTH/3 + 110*column
                 marco_rect.centery = HEIGHT/4 - 5 + 110*fila
                 screen.blit(self.marcoComun, marco_rect)
             #Personaje de jugador 1
-            elif self.charac1 == i:
+            elif self.charac1 == i[0]:
                 marco_rect1 = self.marco1.get_rect()
                 marco_rect1.centerx = WIDTH/3 + 110*column
                 marco_rect1.centery = HEIGHT/4 - 5 + 110*fila
                 screen.blit(self.marco1, marco_rect1)
             #Personaje de jugador 2
-            elif self.charac2 == i:
+            elif self.charac2 == i[0]:
                 marco_rect2 = self.marco2.get_rect()
                 marco_rect2.centerx = WIDTH/3 + 110*column
                 marco_rect2.centery = HEIGHT/4 - 5 + 110*fila
@@ -267,6 +333,9 @@ class SceneFight(Scene):
         self.background = load_image('assets/images/misc/fondo.jpg')
         self.background_rect = self.background.get_rect()
 
+        self.background_music = pygame.mixer.Sound(resource_path("assets/sounds/352171__sirkoto51__boss-battle-loop-1.wav"))
+        self.background_music.play(-1)
+
         #Texto del menú de pausa
         self.pause, self.pause_rect = texto('PAUSA', WIDTH/2, HEIGHT/4, 80)
         self.selectPj, self.selectPj_rect = texto('Back to Character selection (F1)', WIDTH/2, HEIGHT/2, 40)
@@ -276,11 +345,12 @@ class SceneFight(Scene):
         self.end1, self.end1_rect = texto('Player 1 wins!', WIDTH/2, HEIGHT/4, 80)
         self.end2, self.end2_rect = texto('Player 2 wins!', WIDTH/2, HEIGHT/4, 80)
         self.rematch, self.rematch_rect = texto('Revenge! (F2)', WIDTH/2, HEIGHT/2+100,40)
+        self.exit, self.exit_rect = texto('Exit :\'( (ESC)', WIDTH/2, HEIGHT/2+200,40)
 
         # Se inicializan los personajes y avatares
-        self.player1 = copy.copy(player1)
+        self.player1 = player1
         self.player1.x = 75
-        self.player2 = copy.copy(player2)
+        self.player2 = player2
         self.player2.x = 800
 
         self.avatar1Rect = self.player1.avatar[0].get_rect()
@@ -326,144 +396,49 @@ class SceneFight(Scene):
                 self.inMenu = 3
 
     def on_event(self, time, event):
-        keys = pygame.key.get_pressed()
-        #if pygame.KEYDOWN:
-        #Si se está pausado
-        if self.inMenu != 2 and self.inMenu != 3:
-            # Se selecciona escape para el menú
-            if keys[K_ESCAPE] and self.inMenu == 0:
-                self.inMenu = 2
+        if pygame.KEYDOWN:
+            keys = pygame.key.get_pressed()
+            #Si se está pausado
+            if self.inMenu != 2 and self.inMenu != 3:
+                # Se selecciona escape para el menú
+                if keys[K_ESCAPE] and self.inMenu == 0:
+                    self.inMenu = 2
 
-            # Controles Player1
-            ## Ir derecha
-            if keys[K_d] and (not self.player1.cdAction):
-                if self.player1.orientacion == 0:
-                    if not pygame.sprite.collide_mask(self.player1, self.player2):
-                        self.player1.avanzar(time)
-                    else:
-                        self.player1.avanzar(0)
+                # Controles Player1
+                if self.player1.device == "keyboard":
+                    self.player1.actionKeyboard(keys, time, self.inMenu, self.player2)
                 else:
-                    self.player1.defender(time)
-            ## Ir Izquierda
-            if keys[K_a] and (not self.player1.cdAction):
-                if self.player1.orientacion == 4:
-                    if not pygame.sprite.collide_mask(self.player1, self.player2):
-                        self.player1.avanzar(time)
-                    else:
-                        self.player1.avanzar(0)
+                    pass
+                # Controles Player2
+                if self.player2.device == "keyboard":
+                    self.player2.actionKeyboard(keys, time, self.inMenu, self.player1)
                 else:
-                    self.player1.defender(time)
-            ## Saltar                
-            if keys[K_w] and (not self.player1.cdAction and not self.player1.cdSalto):
-                self.player1.saltar()
+                    pass
 
-            if keys[K_w] and keys[K_d]:
-                if self.player1.orientacion == 0:
-                    self.player1.avanzar(time)
-                else:
-                    self.player1.defender(time)
-
-            if keys[K_w] and keys[K_a]:
-                if self.player1.orientacion == 4:
-                    self.player1.avanzar(time)
-                else:
-                    self.player1.defender(time)
-
-            if self.inMenu == 0:
-                ## AtaqueDebil
-                if keys[K_j] and not self.player1.cdAction:
-                    if self.player1.cdSalto:
-                        a=1
-                        #self.player1.ataqueSalto()
-                    elif not self.player1.cdSalto and keys[K_s]:
-                        self.player1.ataqueBajo()
-                    else:    
-                        self.player1.ataqueDebil(self.player2)
-                ## AtaqueFuerte
-                if keys[K_k] and not self.player1.cdAction:
-                    if self.player1.cdSalto:
-                        a=1
-                        #self.player1.ataqueSalto()
-                    elif not self.player1.cdSalto and keys[K_s]:
-                        self.player1.ataqueBajo()
-                    else:
-                        self.player1.ataqueFuerte(self.player2)                            
-
-            # Controles Player2
-            ## Ir derecha
-            if keys[K_RIGHT] and (not self.player2.cdAction):
-                if self.player2.orientacion == 0:
-                    if not pygame.sprite.collide_mask(self.player2, self.player1):
-                        self.player2.avanzar(time)
-                    else:
-                        self.player2.avanzar(0)
-                else:
-                    self.player2.defender(time)
-            ## Ir Izquierda        
-            if keys[K_LEFT] and (not self.player2.cdAction):
-                if self.player2.orientacion == 4:
-                    if not pygame.sprite.collide_mask(self.player2, self.player1):
-                        self.player2.avanzar(time)
-                    else:
-                        self.player2.avanzar(0)
-                else:
-                    self.player2.defender(time)
-            ## Saltar
-            if keys[K_UP] and (not self.player2.cdAction and not self.player2.cdSalto):
-                self.player2.saltar()
-
-            if keys[K_LEFT] and keys[K_UP]:
-                if self.player2.orientacion == 4:
-                    self.player2.avanzar(time)
-                else:
-                    self.player2.defender(time)
-
-            if keys[K_RIGHT] and keys[K_UP]:
-                if self.player2.orientacion == 0:
-                    self.player2.avanzar(time)
-                else:
-                    self.player2.defender(time)
-
-            if self.inMenu == 0:
-                ## AtaqueDebil
-                if keys[K_KP8] and not self.player2.cdAction:
-                    if self.player2.cdSalto:
-                        a=1
-                        #self.player2.ataqueSalto()
-                    elif not self.player2.cdSalto and keys[K_DOWN]:
-                        self.player2.ataqueBajo()
-                    else:    
-                        self.player2.ataqueDebil(self.player1)
-                ## AtaqueFuerte    
-                if keys[K_KP9] and not self.player2.cdAction:
-                    if self.player2.cdSalto:
-                        a=1
-                        #self.player2.ataqueSalto()
-                    elif not self.player2.cdSalto and keys[K_DOWN]:
-                        self.player2.ataqueBajo()
-                    else:
-                        self.player2.ataqueFuerte(self.player1)
-
-        #Se está en el menú de pausa
-        elif self.inMenu == 2:
-            # Se selecciona escape para volver al juego
-            if keys[K_ESCAPE]:
-                self.inMenu = 0
-            if keys[K_F1]:
-                scene = ScenePanel(self.director)
-                self.director.change_scene(scene)
-        #Se acaba el combate
-        elif self.inMenu == 3:
-            #Se selecciona volver a selección pjs
-            if keys[K_F1]:
-                scene = ScenePanel(self.director)
-                self.director.change_scene(scene)
-            #Se selecciona revancha
-            if keys[K_F2]:
-                self.player1.restart()
-                self.player2.restart()
-                scene = SceneFight(self.director, self.player1, self.player2)
-                self.director.change_scene(scene)
+            #Se está en el menú de pausa
+            elif self.inMenu == 2:
+                # Se selecciona escape para volver al juego
+                if keys[K_ESCAPE]:
+                    self.inMenu = 0
+                if keys[K_F1]:
+                    scene = ScenePanel(self.director)
+                    self.background_music.stop()
+                    self.director.change_scene(scene)
+            #Se acaba el combate
+            elif self.inMenu == 3:
+                #Se selecciona volver a selección pjs
+                if keys[K_F1]:
+                    scene = ScenePanel(self.director)
+                    self.background_music.stop()
+                    self.director.change_scene(scene)
+                #Se selecciona revancha
+                if keys[K_F2]:
+                    self.player1.restart()
+                    self.player2.restart()
+                    scene = SceneFight(self.director, self.player1, self.player2)
+                    self.director.change_scene(scene)
+                if keys[K_ESCAPE]:
+                    self.director.quit()
 
     def on_draw(self, screen):
         screen.fill((0,0,0))
@@ -472,8 +447,10 @@ class SceneFight(Scene):
 
         #Actualización del tiempo y barras de vida
         screen.blit(timeCD, time_rect)
-        pygame.draw.rect(screen,(255,255,255),self.hudP1)
-        pygame.draw.rect(screen,(255,255,255),self.hudP2)
+        pygame.draw.rect(screen,pygame.Color('brown1'),pygame.Rect(99, 52, 400, 10))
+        pygame.draw.rect(screen,pygame.Color('brown1'),pygame.Rect(522, 52, 400, 10))
+        pygame.draw.rect(screen,pygame.Color('chartreuse2'),self.hudP1)
+        pygame.draw.rect(screen,pygame.Color('chartreuse2'),self.hudP2)
         screen.blit(self.player1.avatar[0], self.avatar1Rect)
         if self.player1.name == self.player2.name:
             screen.blit(pygame.transform.flip(self.player2.avatar[1], True, False), self.avatar2Rect)
@@ -538,3 +515,4 @@ class SceneFight(Scene):
             screen.blit(text, text_rect)
         screen.blit(self.selectPj, self.selectPj_rect)
         screen.blit(self.rematch, self.rematch_rect)
+        screen.blit(self.exit, self.exit_rect)

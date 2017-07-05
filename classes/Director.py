@@ -21,6 +21,7 @@ class Director:
 		self.scene = None
 		self.quit_flag = False
 		self.clock = pygame.time.Clock()
+		pygame.joystick.init()
 
 	def loop(self):
 		"Pone en funcionamiento el juego."
@@ -34,7 +35,8 @@ class Director:
 			time = self.clock.tick(24)
 
 			# Eventos de Salida
-			for event in pygame.event.get():
+			events = pygame.event.get()
+			for event in events:
 				if event.type == pygame.QUIT:
 					self.quit()
 
@@ -52,4 +54,5 @@ class Director:
 		self.scene = scene
 
 	def quit(self):
+		pygame.joystick.quit()
 		self.quit_flag = True
