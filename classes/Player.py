@@ -280,7 +280,7 @@ class Player(sprite.Sprite):
 
     def actionGamepad(self, pad, time, menu, enemy):
         ## Ir derecha
-        if keys[self.keyMap["right"]] and (not self.cdAction):
+        if self.keyMap["right"] == pad.get_hat(0) and (not self.cdAction):
             if self.orientacion == 0:
                 if not sprite.collide_mask(self, enemy):
                     self.avanzar(time)
@@ -289,7 +289,7 @@ class Player(sprite.Sprite):
             else:
                 self.defender(time)
         ## Ir Izquierda
-        if keys[self.keyMap["left"]] and (not self.cdAction):
+        if self.keyMap["left"] == pad.get_hat(0) and (not self.cdAction):
             if self.orientacion == 4:
                 if not sprite.collide_mask(self, enemy):
                     self.avanzar(time)
@@ -298,16 +298,16 @@ class Player(sprite.Sprite):
             else:
                 self.defender(time)
         ## Saltar                
-        if keys[self.keyMap["up"]] and (not self.cdAction and not self.cdSalto):
+        if self.keyMap["up"] == pad.get_hat(0) and (not self.cdAction and not self.cdSalto):
             self.saltar()
 
-        if keys[self.keyMap["up"]] and keys[self.keyMap["right"]]:
+        if self.keyMap["up"] == pad.get_hat(0) and self.keyMap["right"] == pad.get_hat(0):
             if self.orientacion == 0:
                 self.avanzar(time)
             else:
                 self.defender(time)
 
-        if keys[self.keyMap["up"]] and keys[self.keyMap["left"]]:
+        if self.keyMap["up"] == pad.get_hat(0) and self.keyMap["left"] == pad.get_hat(0):
             if self.orientacion == 4:
                 self.avanzar(time)
             else:
@@ -315,20 +315,20 @@ class Player(sprite.Sprite):
 
         if menu == 0:
             ## AtaqueDebil
-            if keys[self.keyMap["weakAttack"]] and not self.cdAction:
+            if  pad.get_button(self.keyMap["weakAttack"]) and not self.cdAction:
                 if self.cdSalto:
                     a=1
                     #self.ataqueSalto()
-                elif not self.cdSalto and keys[self.keyMap["down"]]:
+                elif not self.cdSalto and self.keyMap["down"] == pad.get_hat(0):
                     self.ataqueBajo()
                 else:    
                     self.ataqueDebil(enemy)
             ## AtaqueFuerte
-            if keys[self.keyMap["strongAttack"]] and not self.cdAction:
+            if pad.get_button(self.keyMap["strongAttack"]) and not self.cdAction:
                 if self.cdSalto:
                     a=1
                     #self.ataqueSalto()
-                elif not self.cdSalto and keys[self.keyMap["down"]]:
+                elif not self.cdSalto and self.keyMap["down"] == pad.get_hat(0):
                     self.ataqueBajo()
                 else:
                     self.ataqueFuerte(enemy)

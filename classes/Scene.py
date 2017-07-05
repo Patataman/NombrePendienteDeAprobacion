@@ -70,8 +70,12 @@ class SceneHome(Scene):
         keys = pygame.key.get_pressed()
         if pygame.KEYDOWN:
             if keys[K_RETURN]:
-                scene = SceneControl(self.director)
-                self.director.change_scene(scene)
+                if pygame.joystick.get_count() != 0:
+                    scene = SceneControl(self.director)
+                    self.director.change_scene(scene)
+                else:
+                    scene = ScenePanel(self.director, "keyboard", "keyboard")
+                    self.director.change_scene(scene)
 
     def on_draw(self, screen):
         screen.fill((0, 0, 0))
@@ -85,13 +89,11 @@ class SceneControl(Scene):
     def __init__(self, director):
         Scene.__init__(self, director)
 
-        JOYSTICKS = [pygame.joystick.Joystick(x) for x in range(pygame.joystick.get_count())]
-
         #Altura: Segundo cuarto
         self.select, self.select_rect = texto('Select Controller', WIDTH/2, HEIGHT/5-50, 75, (255,255,255))
         self.cont, self.cont_rect = texto('Continue (ENTER)', WIDTH/2, HEIGHT-75, 50, (255,255,255))
         self.device1, self.device2 = "keyboard", "keyboard"
-
+        self.error = False
         self.keyboard = load_image("assets/images/misc/keyboard.png")
         self.keyboard_rect = self.keyboard.get_rect()
         self.keyboard_rect.centerx = WIDTH/2
@@ -116,7 +118,7 @@ class SceneControl(Scene):
         #Al pulsar una tecla...
         keys = pygame.key.get_pressed()
         if pygame.KEYDOWN:
-            if keys[K_RETURN]:
+            if keys[K_RETURN] and not self.error:
                 scene = ScenePanel(self.director, self.device1, self.device2)
                 self.director.change_scene(scene)
             if keys[K_w] and self.device1 != "keyboard":
@@ -135,11 +137,17 @@ class SceneControl(Scene):
     def on_draw(self, screen):
         screen.fill((0, 0, 0))
         screen.blit(self.select, self.select_rect)
-        screen.blit(self.cont, self.cont_rect)
         screen.blit(self.player1, self.player1_rect)
         screen.blit(self.player2, self.player2_rect)
         screen.blit(self.keyboard, self.keyboard_rect)
         screen.blit(self.pad, self.pad_rect)
+        if self.device1 == "pad" and self.device2 == "pad" and pygame.joystick.get_count() < 2:
+            self.error = True
+            aux, aux_rect = texto('Only 1 Gamepad detected', WIDTH/2, HEIGHT-75, 50, (255,255,255))
+            screen.blit(aux, aux_rect)
+        else:
+            self.error = False
+            screen.blit(self.cont, self.cont_rect)
 
 
 class ScenePanel(Scene):
@@ -160,6 +168,10 @@ class ScenePanel(Scene):
         self.panel = []
         for pj in pjs:
             self.panel.append([Player(pj, 1, device1),  Player(pj, 2, device2)])
+
+        self.pad1 = None
+        self.pad2 = None
+        self.getPads(device1, device2)
         
         self.charac1, self.charac2 = self.panel[0][0], self.panel[0][0]
         self.prev1, self.prev2 = self.panel[0][0], self.panel[0][1]
@@ -202,61 +214,61 @@ class ScenePanel(Scene):
                 self.director.change_scene(scene)
             #Se selecciona luchar
             if keys[K_F2]:
-                scene = SceneFight(self.director, self.prev1, self.prev2)
+                scene = SceneFight(self.director, self.prev1, self.pad1, self.prev2, self.pad2)
                 self.director.change_scene(scene)
                 self.background_music.stop()
                 pygame.mixer.Sound(resource_path("assets/sounds/58773__syna-max__anime-shing.wav")).play()
             #Se selecciona un luchador
-            if keys[K_SPACE]:
+            if keys[K_SPACE] or (self.pad1 is not None and self.pad1.get_button(0)):
                 #Se guarda el pj seleccionado y se actualiza la vista previa
                 self.charac1 = self.panel[self.select1][0]
                 self.prev1 = self.panel[self.select1][0]
                 self.prev1.orientacion = 0
                 self.prev1.x = 75
                 self.nomb1, self.nomb1_rect = texto(self.prev1.name, 150, 100, 35)
-            if keys[K_RETURN]:
+            if keys[K_RETURN] or (self.pad2 is not None and self.pad2.get_button(0)):
                 #Se guarda el pj seleccionado y se actualiza la vista previa
                 self.charac2 = self.panel[self.select2][0]
                 self.prev2 = self.panel[self.select2][1]
                 self.prev2.orientacion = 4
                 self.prev2.x = 800
                 self.nomb2, self.nomb2_rect = texto(self.prev2.name, WIDTH-150, 100, 35)
-            if keys[K_w]:
+            if keys[K_w] or (self.pad1 is not None and self.pad1.get_hat(0)[1] == 1):
                 if self.select1//4 != 0:
                     self.select1 -= 4
                     self.charac1 = self.panel[self.select1][0]
                     self.select_music.play()
-            if keys[K_UP]:
+            if keys[K_UP] or (self.pad2 is not None and self.pad2.get_hat(0)[1] == 1):
                 if self.select2//4 != 0:
                     self.select2 -= 4
                     self.charac2 = self.panel[self.select2][0]
                     self.select_music.play()
-            if keys[K_a]:
+            if keys[K_a] or (self.pad1 is not None and self.pad1.get_hat(0)[0] == -1):
                 if self.select1 % 4 != 0:
                     self.select1 -= 1
                     self.charac1 = self.panel[self.select1][0]
                     self.select_music.play()
-            if keys[K_LEFT]:
+            if keys[K_LEFT] or (self.pad2 is not None and self.pad2.get_hat(0)[0] == -1):
                 if self.select2 % 4 != 0:
                     self.select2 -= 1
                     self.charac2 = self.panel[self.select2][0]
                     self.select_music.play()
-            if keys[K_s]:
+            if keys[K_s] or (self.pad1 is not None and self.pad1.get_hat(0)[1] == -1):
                 if self.select1//4+1 != self.max_filas and self.select1+4 < len(self.panel):
                     self.select1 += 4
                     self.charac1 = self.panel[self.select1][0]
                     self.select_music.play()
-            if keys[K_DOWN]:
+            if keys[K_DOWN] or (self.pad2 is not None and self.pad2.get_hat(0)[1] == -1):
                 if self.select2//4+1 != self.max_filas and self.select2+4 < len(self.panel):
                     self.select2 += 4
                     self.charac2 = self.panel[self.select2][0]
                     self.select_music.play()
-            if keys[K_d]:
+            if keys[K_d] or (self.pad1 is not None and self.pad1.get_hat(0)[0] == 1):
                 if self.select1 % 4 != 3 and self.select1 != len(self.panel)-1:
                     self.select1 += 1
                     self.charac1 = self.panel[self.select1][0]
                     self.select_music.play()
-            if keys[K_RIGHT]:
+            if keys[K_RIGHT] or (self.pad2 is not None and self.pad2.get_hat(0)[0] == 1):
                 if self.select2 % 4 != 3 and self.select2 != len(self.panel)-1:
                     self.select2 += 1
                     self.charac2 = self.panel[self.select2][0]
@@ -317,10 +329,22 @@ class ScenePanel(Scene):
 
             column += 1
 
+    def getPads(self, device1, device2):
+        if pygame.joystick.get_count() == 1:
+            if device1 == "pad":
+                self.pad1 = pygame.joystick.Joystick(0)
+            elif device2 == "pad":
+                self.pad2 = pygame.joystick.Joystick(0)
+        elif pygame.joystick.get_count() == 2:
+            if device1 == "pad":
+                self.pad1 = pygame.joystick.Joystick(0)
+            if device2 == "pad":
+                self.pad2 = pygame.joystick.Joystick(1)
+
 
 class SceneFight(Scene):
 
-    def __init__(self, director, player1, player2):
+    def __init__(self, director, player1, pad1, player2, pad2):
         screen = pygame.display.set_mode((WIDTH, HEIGHT))
         pygame.display.set_caption("FightSene")
 
@@ -350,8 +374,12 @@ class SceneFight(Scene):
         # Se inicializan los personajes y avatares
         self.player1 = player1
         self.player1.x = 75
+        if self.player1.device == "pad":
+            self.pad1 = pad1
         self.player2 = player2
         self.player2.x = 800
+        if self.player2.device == "pad":
+            self.pad2 = pad2
 
         self.avatar1Rect = self.player1.avatar[0].get_rect()
         self.avatar1Rect.centerx = 53
@@ -408,12 +436,12 @@ class SceneFight(Scene):
                 if self.player1.device == "keyboard":
                     self.player1.actionKeyboard(keys, time, self.inMenu, self.player2)
                 else:
-                    pass
+                    self.player1.actionGamepad(self.pad1, time, self.inMenu, self.player2)
                 # Controles Player2
                 if self.player2.device == "keyboard":
                     self.player2.actionKeyboard(keys, time, self.inMenu, self.player1)
                 else:
-                    pass
+                    self.player2.actionGamepad(self.pad2, time, self.inMenu, self.player1)
 
             #Se está en el menú de pausa
             elif self.inMenu == 2:
