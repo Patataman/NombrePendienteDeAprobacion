@@ -4,7 +4,7 @@ from pygame import sprite
 from pygame.locals import *
 from .Functions import *
 
-FRAMES = 16
+FRAMES = 4
 
 class Player(sprite.Sprite):
     """Representa cada personaje del juego durante la partida.
@@ -34,7 +34,7 @@ class Player(sprite.Sprite):
         self.state = "idle"
         self.health = 100
         # Hacia donde mira (0 -> derecha, 4 -> izquierda)
-        self.current_hframe = 0 # Lo necesitaremos para hacer el ciclo de animación
+        self.current_hframe = 0.0 # Lo necesitaremos para hacer el ciclo de animación
         self.orientacion = 0
         self.x = 75         #X inicial
         self.y = 250        #Y inicial
@@ -64,6 +64,9 @@ class Player(sprite.Sprite):
             self.keyMap["right"] = (0,1)
             self.keyMap["weakAttack"] = 2       #Number of the button (X on Xbox controller)
             self.keyMap["strongAttack"] = 3     #Number of the button (Y on Xbox controller)
+
+    def getFrame(self):
+        return int(self.current_hframe%5)
 
     # Actions
     def avanzar(self, time):
@@ -116,10 +119,10 @@ class Player(sprite.Sprite):
         self.golpeando = True
         if self.ataque != 2:
             self.ataque += 1
-            self.cdAction = 10
+            self.cdAction = 5
         else:
             self.ataque = 0
-            self.cdAction = 30
+            self.cdAction = 20
             if sprite.collide_mask(self, playerObjective):
                 playerObjective.getHurt(5)
 
@@ -131,7 +134,7 @@ class Player(sprite.Sprite):
         self.state = "ataqueFuerte"
         self.vulnerable = True
         self.golpeando = True
-        self.cdAction = 40
+        self.cdAction = 20
         if sprite.collide_mask(self, playerObjective):
             playerObjective.getHurt(12)
 
@@ -196,15 +199,15 @@ class Player(sprite.Sprite):
 
     def update(self):
         ##### Se calculan los atributos necesarios para las colisiones. Da igual si es 0 o 1, ya que sólo varía el color
-        self.image = self.sprites[0][self.state][self.current_hframe//4+self.orientacion]
+        self.image = self.sprites[0][self.state][self.getFrame()+self.orientacion]
         self.rect = self.image.get_rect()
         self.rect.center = (self.x, self.y)
         #####
 
         # Actualizamos frames
-        self.current_hframe += 1
-        if self.current_hframe == FRAMES:
-            self.current_hframe = 0
+        self.current_hframe += 1/15
+        if self.getFrame() == FRAMES:
+            self.current_hframe = 0.0
 
         # Actualizamos posición si estamos en un salto
         # e = 1/2 * a * t² + Vo * t + Eo
