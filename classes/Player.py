@@ -119,12 +119,12 @@ class Player(sprite.Sprite):
         self.golpeando = True
         if self.ataque != 2:
             self.ataque += 1
-            self.cdAction = 5
-        else:
-            self.ataque = 0
-            self.cdAction = 20
+            self.cdAction = 10
             if sprite.collide_mask(self, playerObjective):
                 playerObjective.getHurt(5)
+        else:
+            self.ataque = 0
+            self.cdAction = 30
 
     def ataqueFuerte(self, playerObjective):
         """El ataque fuerte se caracteriza por inflingir mayor daño pero requerir más tiempo de ejecución.
@@ -132,9 +132,10 @@ class Player(sprite.Sprite):
         """
 
         self.state = "ataqueFuerte"
+        self.current_hframe = 0
         self.vulnerable = True
         self.golpeando = True
-        self.cdAction = 20
+        self.cdAction = 40
         if sprite.collide_mask(self, playerObjective):
             playerObjective.getHurt(12)
 
@@ -182,7 +183,7 @@ class Player(sprite.Sprite):
         self.state = "ataqueBajo"
         self.vulnerable = True
         self.golpeando = True
-        self.cdAction = 5
+        self.cdAction = 15
 
     def getHurt(self, dmg):
         """Cuando un personaje recibe daño, este se resta de sus puntos de vida actuales. En caso de estos
@@ -205,7 +206,7 @@ class Player(sprite.Sprite):
         #####
 
         # Actualizamos frames
-        self.current_hframe += 1/15
+        self.current_hframe += 1/24
         if self.getFrame() == FRAMES:
             self.current_hframe = 0.0
 

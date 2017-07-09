@@ -2,6 +2,7 @@
 
 import pygame
 from pygame.locals import *
+import os
 from .Functions import load_image
 
 class Director:
@@ -16,7 +17,7 @@ class Director:
 	def __init__(self):
 		self.screen = pygame.display.set_mode([1024,768], pygame.RESIZABLE)
 		#Poner el iconito a la ventana
-		pygame.display.set_icon(load_image("assets/images/misc/icon32.png"))
+		pygame.display.set_icon(load_image("assets"+os.sep+"images"+os.sep+"misc"+os.sep+"icon32.png"))
 		pygame.display.set_caption("NombrePendienteDeAprobacion")
 		self.scene = None
 		self.quit_flag = False
@@ -32,7 +33,7 @@ class Director:
 		   y la siguiente la reconoce a las 200ms'''
 		pygame.key.set_repeat(10, 200)
 		while not self.quit_flag:
-			time = self.clock.tick(60)
+			time = self.clock.tick(24)
 
 			# Eventos de Salida
 			events = pygame.event.get()

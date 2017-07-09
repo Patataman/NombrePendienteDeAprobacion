@@ -49,7 +49,7 @@ class SceneHome(Scene):
         self.iniciar, self.iniciar_rect = texto('Character selection', WIDTH/2, HEIGHT/2, 40)
         self.titulo, self.titulo_rect = texto('Title', WIDTH/2, HEIGHT/4, 75, (255,255,255))
 
-        self.flecha = load_image("assets/images/misc/flecha.png")
+        self.flecha = load_image("assets"+os.sep+"images"+os.sep+"misc"+os.sep+"flecha.png")
         #self.flecha = pygame.transform.scale(self.flecha, (self.iniciar.get_width()/4*3,self.iniciar.get_height()/4*3+10))
         self.flecha_rect = self.flecha.get_rect()
         self.flecha_rect.centerx = WIDTH/2 - self.iniciar.get_width()/4*3 - 50
@@ -57,7 +57,7 @@ class SceneHome(Scene):
 
 
         #Carga la musica
-        #pygame.mixer.music.load("assets/music/title_theme.mp3")
+        #pygame.mixer.music.load("assets"+os.sep+"music"+os.sep+"title_theme.mp3")
         #Pone la música a funcionar
         # loop = -1 -> Loop infinito
         #pygame.mixer.music.play(-1)
@@ -94,11 +94,11 @@ class SceneControl(Scene):
         self.cont, self.cont_rect = texto('Continue (ENTER)', WIDTH/2, HEIGHT-75, 50, (255,255,255))
         self.device1, self.device2 = "keyboard", "keyboard"
         self.error = False
-        self.keyboard = load_image("assets/images/misc/keyboard.png")
+        self.keyboard = load_image("assets"+os.sep+"images"+os.sep+"misc"+os.sep+"keyboard.png")
         self.keyboard_rect = self.keyboard.get_rect()
         self.keyboard_rect.centerx = WIDTH/2
         self.keyboard_rect.centery = HEIGHT/2-50
-        self.pad = load_image("assets/images/misc/pad.png")
+        self.pad = load_image("assets"+os.sep+"images"+os.sep+"misc"+os.sep+"pad.png")
         self.pad_rect = self.pad.get_rect()
         self.pad_rect.centerx = WIDTH/2
         self.pad_rect.centery = HEIGHT/2+150
@@ -160,7 +160,7 @@ class ScenePanel(Scene):
 
         import json
 
-        pjs = json.load(open(resource_path('classes/characters.json')))
+        pjs = json.load(open(resource_path("classes"+os.sep+"characters.json")))
 
         #Lista de objetos personajes (siendo cada posición un tipo de personaje)
         #El panel se sitúa en el medio de la pantalla y
@@ -181,9 +181,9 @@ class ScenePanel(Scene):
         self.prev2.orientacion = 4
         self.prev1.x = 75
         self.prev2.x = 800
-        self.marco1 = load_image("assets/images/misc/select1.png")
-        self.marco2 = load_image("assets/images/misc/select2.png")
-        self.marcoComun = load_image("assets/images/misc/select12.png")
+        self.marco1 = load_image("assets"+os.sep+"images"+os.sep+"misc"+os.sep+"select1.png")
+        self.marco2 = load_image("assets"+os.sep+"images"+os.sep+"misc"+os.sep+"select2.png")
+        self.marcoComun = load_image("assets"+os.sep+"images"+os.sep+"misc"+os.sep+"select12.png")
 
         self.atras, self.atras_rect = texto('Back F1', 100, HEIGHT-100, 40)
         self.sig, self.sig_rect = texto('Figth! F2', WIDTH-100 , HEIGHT-100, 40)
@@ -193,9 +193,11 @@ class ScenePanel(Scene):
 
         #Carga la musica
         # loop = -1 -> Loop infinito
-        self.background_music = pygame.mixer.Sound(resource_path("assets/sounds/341362__sirkoto51__anime-encounter-loop-1.wav"))
+        self.background_music = pygame.mixer.Sound(resource_path("assets"+os.sep+"sounds"+os.sep+"341362__sirkoto51__anime-encounter-loop-1.wav"))
+        self.background_music.set_volume(0.5)
         self.background_music.play(-1)
-        self.select_music = pygame.mixer.Sound(resource_path("assets/sounds/173327__soundnimja__blip-2.wav"))
+        self.select_music = pygame.mixer.Sound(resource_path("assets"+os.sep+"sounds"+os.sep+"173327__soundnimja__blip-2.wav"))
+        self.select_music.set_volume(0.5)
         #Pone la música a funcionar
 
     def on_update(self, time):
@@ -217,7 +219,7 @@ class ScenePanel(Scene):
                 scene = SceneFight(self.director, self.prev1, self.pad1, self.prev2, self.pad2)
                 self.director.change_scene(scene)
                 self.background_music.stop()
-                pygame.mixer.Sound(resource_path("assets/sounds/58773__syna-max__anime-shing.wav")).play()
+                pygame.mixer.Sound(resource_path("assets"+os.sep+"sounds"+os.sep+"58773__syna-max__anime-shing.wav")).play()
             #Se selecciona un luchador
             if keys[K_SPACE] or (self.pad1 is not None and self.pad1.get_button(0)):
                 #Se guarda el pj seleccionado y se actualiza la vista previa
@@ -351,13 +353,14 @@ class SceneFight(Scene):
         self.director = director
 
         #Carga de fondo e imagenes varias
-        self.backgroundPause = load_image('assets/images/misc/fondoSemiNegro.png')
+        self.backgroundPause = load_image("assets"+os.sep+"images"+os.sep+"misc"+os.sep+"fondoSemiNegro.png")
         self.backgroundPause_rect = self.backgroundPause.get_rect()
 
-        self.background = load_image('assets/images/misc/fondo.jpg')
+        self.background = load_image("assets"+os.sep+"images"+os.sep+"misc"+os.sep+"fondo.jpg")
         self.background_rect = self.background.get_rect()
 
-        self.background_music = pygame.mixer.Sound(resource_path("assets/sounds/352171__sirkoto51__boss-battle-loop-1.wav"))
+        self.background_music = pygame.mixer.Sound(resource_path("assets"+os.sep+"sounds"+os.sep+"352171__sirkoto51__boss-battle-loop-1.wav"))
+        self.background_music.set_volume(0.5)
         self.background_music.play(-1)
 
         #Texto del menú de pausa
@@ -376,10 +379,14 @@ class SceneFight(Scene):
         self.player1.x = 75
         if self.player1.device == "pad":
             self.pad1 = pad1
+        else:
+            self.pad1 = None
         self.player2 = player2
         self.player2.x = 800
         if self.player2.device == "pad":
             self.pad2 = pad2
+        else:
+            self.pad2 = None
 
         self.avatar1Rect = self.player1.avatar[0].get_rect()
         self.avatar1Rect.centerx = 53
@@ -456,7 +463,7 @@ class SceneFight(Scene):
             elif self.inMenu == 3:
                 #Se selecciona volver a selección pjs
                 if keys[K_F1]:
-                    scene = ScenePanel(self.director)
+                    scene = ScenePanel(self.director , self.player1.device, self.player2.device)
                     self.background_music.stop()
                     self.director.change_scene(scene)
                 #Se selecciona revancha
